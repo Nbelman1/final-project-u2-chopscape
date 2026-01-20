@@ -4,9 +4,9 @@
 
 export const LOGS = [
     { 
-        tree: 'Tree',
+        tree: "Tree",
         levelRequired: 1,
-        logType: 'Logs',
+        logType: "Logs",
         expGained: 25,
         harvestLimit: 1, 
         lifeTime: 0, // normal trees are felled from 1 successful chop
@@ -16,9 +16,9 @@ export const LOGS = [
         isAvailable: true // changes to false when tree is felled
     },
     { 
-        tree: 'Oak tree',
+        tree: "Oak tree",
         levelRequired: 15,
-        logType: 'Oak logs',
+        logType: "Oak logs",
         expGained: 37,
         harvestLimit: Infinity, // harvest based on successRate and lifeTime
         lifeTime: 27,
@@ -28,9 +28,9 @@ export const LOGS = [
         isAvailable: true
     },
     { 
-        tree: 'Willow tree',
+        tree: "Willow tree",
         levelRequired: 30,
-        logType: 'Willow logs',
+        logType: "Willow logs",
         expGained: 67,
         harvestLimit: Infinity,  // harvest based on successRate and lifeTime
         lifeTime: 30,
