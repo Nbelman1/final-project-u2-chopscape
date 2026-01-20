@@ -1,0 +1,41 @@
+// holds data for levels
+// TODO: move to database when we learn how to send pull requests 
+
+// current maximum level is 35
+export const EXP_TABLE = [
+    { level: 1, expRequired: 0 },
+    { level: 2, expRequired: 83 },
+    { level: 3, expRequired: 174 },
+    { level: 4, expRequired: 276 },
+    { level: 5, expRequired: 388 },
+    { level: 6, expRequired: 512 },
+    { level: 7, expRequired: 650 },
+    { level: 8, expRequired: 801 },
+    { level: 9, expRequired: 969 },
+    { level: 10, expRequired: 1154 },
+    { level: 11, expRequired: 1358 },
+    { level: 12, expRequired: 1584 },
+    { level: 13, expRequired: 1833 },
+    { level: 14, expRequired: 2107 },
+    { level: 15, expRequired: 2411 },
+    { level: 16, expRequired: 2746 },
+    { level: 17, expRequired: 3115 },
+    { level: 18, expRequired: 3523 },
+    { level: 19, expRequired: 3973 },
+    { level: 20, expRequired: 4470 },
+    { level: 21, expRequired: 5018 },
+    { level: 22, expRequired: 5624 },
+    { level: 23, expRequired: 6291 },
+    { level: 24, expRequired: 7028 },
+    { level: 25, expRequired: 7842 },
+    { level: 26, expRequired: 8740 },
+    { level: 27, expRequired: 9730 },
+    { level: 28, expRequired: 10824 },
+    { level: 29, expRequired: 12031 },
+    { level: 30, expRequired: 13363 },
+    { level: 31, expRequired: 14833 },
+    { level: 32, expRequired: 16456 },
+    { level: 33, expRequired: 18247 },
+    { level: 34, expRequired: 20224 },
+    { level: 35, expRequired: 22406 }
+];
