@@ -2,12 +2,12 @@
 // max number of stacked items = 28
 // can unstack later when I incorporate drag and drop 
 
+const invItems = [];
 
-
-const InventoryPanel = () => {
+const InventoryPanel = ({ activeTab, onTabClick }) => {
     return (
         <>
-
+            
         </>
     );
 };
