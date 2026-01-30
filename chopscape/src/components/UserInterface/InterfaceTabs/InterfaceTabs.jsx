@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 // TODO: add icons for each tab
 const TABS = [
     {id: "combat", icon: "combat-options.png", label: "Combat options", position: "top"},
@@ -38,8 +40,10 @@ const InterfaceTabs = ({ activeTab, onTabClick }) => {
             <div className="tabs-row bottom-tabs">
                 {bottomTabs.map(renderTab)}
             </div>
-        </div>
 
+            <Link to='/'>Developer's escape button</Link>
+        </div>
+          
     );
 };
 

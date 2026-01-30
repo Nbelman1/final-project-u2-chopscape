@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Login = () => {
     return (
         <>
@@ -12,7 +14,10 @@ const Login = () => {
               <input type="password" id="password" name="password" placeholder="***" required />
             </fieldset>
 
+            {/* TODO: add onClick to button to validate account */}
             <button>Log In</button>
+            <br></br>
+            <Link to='/game'>(if accountValid === true)</Link>
         </>
     );
 };

@@ -7,6 +7,7 @@ const MessageLog = () => {
     return (
         <>  
             <p>-----</p>
+            <h3>I'm a Message Log</h3>
             <p>You swing your axe at the tree.</p>
             <p>You get some logs.</p>
             <p>Your inventory is full. Consider dropping some logs.</p>

@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
+
 const Header = () => {
     return (
         <>
-            <h1>ChopScape</h1>
+            <h1><Link to='/'>ChopScape</Link></h1>
         </>
     );
 };

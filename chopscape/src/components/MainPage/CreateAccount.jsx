@@ -1,20 +1,25 @@
 const CreateAccount = () => {
-    return (
-        <>
-            <h2>Create Account</h2>
-            <fieldset>
-              <legend>Enter info</legend>
+  return (
+    <>
+      <h2>Create Account</h2>
 
-              <label htmlFor="username">Username: </label>
-              <input type="text" id="username" name="username" placeholder="TreeChopper99" required />
+      <p>Failure message (hide this)</p>
 
-              <label htmlFor="username"> Password: </label>
-              <input type="password" id="password" name="password" placeholder="***" required />
-            </fieldset>
+      <fieldset>
+        <legend>Enter info</legend>
 
-            <button>Create Account</button>
-        </>
-    );
+        <label htmlFor="username">Username: </label>
+        <input type="text" id="username" name="username" placeholder="TreeChopper99" required />
+
+        <label htmlFor="username"> Password: </label>
+        <input type="password" id="password" name="password" placeholder="***" required />
+      </fieldset>
+
+      <button>Reset</button>
+      <button>Create Account</button>
+      
+    </>
+  );
 };
 
 export default CreateAccount;

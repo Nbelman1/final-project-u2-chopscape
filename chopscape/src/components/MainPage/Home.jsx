@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 const Home = () => {
     return (
         <>  
-          <button>Create Account</button>
-          <button>Play</button>
+          <Link to='/create-account'>Create Account </Link>
+          <br></br>
+          <Link to='/login'>Play</Link>
 
           <p>Success Message (hide this)</p>
 
