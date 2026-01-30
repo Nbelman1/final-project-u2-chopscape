@@ -7,7 +7,7 @@ const invItems = [];
 const InventoryPanel = ({ activeTab, onTabClick }) => {
     return (
         <>
-            
+            <p>Logs x 10</p>
         </>
     );
 };
