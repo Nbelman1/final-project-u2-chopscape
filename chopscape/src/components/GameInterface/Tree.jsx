@@ -12,6 +12,8 @@ const Tree = () => {
                     else if other tree {after lifeTime seconds, isAvailable = false}
                 startRespawnTimer(respawnTimeMin, respawnTimeMax)
                 remove "Chop down" clickable option from tree object  */}
+
+            <p>Tree - chop down</p>
         </>
     );
 };
