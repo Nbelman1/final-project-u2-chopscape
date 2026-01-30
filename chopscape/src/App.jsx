@@ -14,10 +14,12 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("combat");
 
+  console.log("Parent state: " + activeTab);
+
   return (
     <BrowserRouter>
       <Routes>
-        
+
         {/* Pages with header and footer */}
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />
