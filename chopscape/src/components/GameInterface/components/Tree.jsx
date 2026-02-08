@@ -23,7 +23,6 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     // check if tree is available
     function isTreeAvailable(isNodeAvailable) {
-        console.log("running isTreeAvailable");
         if (isNodeAvailable) {
             setMessages(prev => [...prev, "You swing your axe at the tree."]);
             return true;
@@ -35,7 +34,6 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     // check player's woodcutting level 
     function determineLevel(woodcuttingExp) {
-        console.log("running determineLevel");
         let currentLevel = 1;
         for (const obj of EXP_TABLE) {
             if (woodcuttingExp >= obj.expRequired) {
@@ -48,7 +46,6 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     // checks if player has level required to cut tree 
     function hasLevelRequired(treeType, woodcuttingLevel) {
-        console.log("running hasLevelRequired");
         for (const treeObj of LOGS) {
             if (treeType == treeObj.tree) {
                 if (woodcuttingLevel >= treeObj.levelRequired) {
@@ -69,7 +66,9 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     // check if chop is successful
     function rollForSuccess(woodcuttingLevel, treeType) {
+        console.log("woodcutting exp before success: " + woodcuttingExp);
         console.log("running rollForSuccess");
+
         const index = woodcuttingLevel - 1; // account for 0-based indexing
         const successRate = CHOP_CHANCES[index].successRate;
         const isSuccess = Math.random() < successRate; // success if rate is higher than roll
@@ -83,10 +82,12 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
         if (isSuccess) {
             setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
-            setWoodcuttingExp(prevExp => prevExp + treeObj.expGained);
+            const newWoodcuttingExp = woodcuttingExp + treeObj.expGained;
+            setWoodcuttingExp(newWoodcuttingExp);
             // TODO: add +1 logs to inventory
-            console.log("woodcutting exp: " + woodcuttingExp);
+            console.log("woodcutting exp after success: " + newWoodcuttingExp);
         }
+        // TODO: track level up, print message to log
     }
 
     // throttle chopping action
@@ -98,13 +99,12 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
         setTimeout(() => {
             setIsChopping(false);
         }, 2400); // 2400 ms = 2.4 seconds
-        // FIXME: get rollForSuccess to run every 2.4 seconds
+        // FIXME: get rollForSuccess to run every 2.4 seconds on failure instead of just running once 
     }
 
     // TODO: if treeType = tree, setIsAvailable(false) and start timer 
 
     function handleTreeClick() {
-        console.log("running handleTreeClick");
         if (!isTreeAvailable(isNodeAvailable)) return; // cancel action if tree node is not yet available
         
         // TODO: check if player has space in inventory
@@ -115,8 +115,6 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     return (
         <>
-            
-
             <img 
                 src={tree} alt='A standard tree' 
                 className='tree-size' 
