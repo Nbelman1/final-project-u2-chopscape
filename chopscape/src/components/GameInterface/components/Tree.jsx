@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import tree from '../assets/tree.png';
+import { EXP_TABLE } from '../../../data/levels';
+import { LOGS } from '../../../data/logs';
+import { CHOP_CHANCES } from '../../../data/chop-chance';
 
 {/* TODO: add function chopDown (woodcuttingLevel, treeType, axeType): 
                 check that tree isAvailable
@@ -13,22 +16,102 @@ import tree from '../assets/tree.png';
                 startRespawnTimer(respawnTimeMin, respawnTimeMax)
                 remove "Chop down" clickable option from tree object  */}
 
-const Tree = ({ isNodeAvailable, setMessages }) => {
+const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp }) => {
 
-    function checkIfNodeIsAvailable (isNodeAvailable) {
-        isNodeAvailable? true : false;
-    }
+    const [isChopping, setIsChopping] = useState(false);
+    const [woodcuttingLevel, setWoodcuttingLevel] = useState(1);
 
-    function chopTree() {
+    // check if tree is available
+    function isTreeAvailable(isNodeAvailable) {
+        console.log("running isTreeAvailable");
         if (isNodeAvailable) {
             setMessages(prev => [...prev, "You swing your axe at the tree."]);
+            return true;
+        } else if (!isNodeAvailable) {
+            setMessages(prev => [...prev, "Please wait for logs to grow back."]);
+            return false;
         }
     }
 
-    function handleTreeClick() {
-        chopTree();
+    // check player's woodcutting level 
+    function determineLevel(woodcuttingExp) {
+        console.log("running determineLevel");
+        let currentLevel = 1;
+        for (const obj of EXP_TABLE) {
+            if (woodcuttingExp >= obj.expRequired) {
+                currentLevel = obj.level;
+            }
+        }
+        setWoodcuttingLevel(currentLevel); // update state
+        return currentLevel; // use variable to record snapshot
+    };
+
+    // checks if player has level required to cut tree 
+    function hasLevelRequired(treeType, woodcuttingLevel) {
+        console.log("running hasLevelRequired");
+        for (const treeObj of LOGS) {
+            if (treeType == treeObj.tree) {
+                if (woodcuttingLevel >= treeObj.levelRequired) {
+                    startChopping(woodcuttingLevel, "tree");
+                    return true;
+                } else {
+                    const levelRequired = treeObj.levelRequired;
+                    setMessages(prev => [...prev, `You need a Woodcutting level of ${levelRequired} to chop down this tree.`]);
+                    return false;
+                }
+            } else {
+                return "Error: tree type not recognized.";
+            }
+        }
     }
 
+    // TODO: check if player has room in inventory
+
+    // check if chop is successful
+    function rollForSuccess(woodcuttingLevel, treeType) {
+        console.log("running rollForSuccess");
+        const index = woodcuttingLevel - 1; // account for 0-based indexing
+        const successRate = CHOP_CHANCES[index].successRate;
+        const isSuccess = Math.random() < successRate; // success if rate is higher than roll
+
+        // find tree object in LOGS array
+        const treeObj = LOGS.find(obj => obj.treeType = treeType);
+        
+        if (!treeObj) {
+            setMessages(prev => [...prev, "Error: tree type not found."]);
+        }
+
+        if (isSuccess) {
+            setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
+            setWoodcuttingExp(prevExp => prevExp + treeObj.expGained);
+            // TODO: add +1 logs to inventory
+            console.log("woodcutting exp: " + woodcuttingExp);
+        }
+    }
+
+    // throttle chopping action
+    function startChopping(woodcuttingLevel, treeType) {
+        console.log("running startChopping");
+        if (isChopping) return; // stop action if player is already chopping 
+        setIsChopping(true); // start chopping tree 
+        rollForSuccess(woodcuttingLevel, treeType);
+        setTimeout(() => {
+            setIsChopping(false);
+        }, 2400); // 2400 ms = 2.4 seconds
+        // FIXME: get rollForSuccess to run every 2.4 seconds
+    }
+
+    // TODO: if treeType = tree, setIsAvailable(false) and start timer 
+
+    function handleTreeClick() {
+        console.log("running handleTreeClick");
+        if (!isTreeAvailable(isNodeAvailable)) return; // cancel action if tree node is not yet available
+        
+        // TODO: check if player has space in inventory
+
+        const currentLevel = determineLevel(woodcuttingExp);
+        hasLevelRequired("Tree", currentLevel);
+    }
 
     return (
         <>

@@ -7,10 +7,11 @@ const GameInterface = () => {
 
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
     const [messages, setMessages] = useState([]);
+    const [woodcuttingExp, setWoodcuttingExp] = useState(0);
 
     return (
         <>
-            <Tree isNodeAvailable={isNodeAvailable} setIsNodeAvailable={setIsNodeAvailable} setMessages={setMessages} />
+            <Tree isNodeAvailable={isNodeAvailable} setIsNodeAvailable={setIsNodeAvailable} setMessages={setMessages} woodcuttingExp={woodcuttingExp} setWoodcuttingExp={setWoodcuttingExp}/>
             <MessageLog messages={messages} />
         </>
     );

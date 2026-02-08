@@ -11,6 +11,8 @@ import GameInterface from './components/GameInterface/components/GameInterface';
 import MessageLog from './components/GameInterface/components/MessageLog';
 import MainLayout from './components/MainPage/MainLayout';
 
+// TODO: erase all console.logs
+
 function App() {
 
   const [activeTab, setActiveTab] = useState("combat");
