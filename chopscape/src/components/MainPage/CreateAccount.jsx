@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const CreateAccount = () => {
     return (
         <>
@@ -12,7 +14,7 @@ const CreateAccount = () => {
               <input type="password" id="password" name="password" placeholder="***" required />
             </fieldset>
 
-            <button>Create Account</button>
+            <Link to='/'>Create Account</Link>
         </>
     );
 };
