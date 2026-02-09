@@ -27,7 +27,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
             setMessages(prev => [...prev, "You swing your axe at the tree."]);
             return true;
         } else if (!isNodeAvailable) {
-            setMessages(prev => [...prev, "Please wait for logs to grow back."]);
+            setMessages(prev => [...prev, "Please wait for tree to grow back."]);
             return false;
         }
     }
@@ -64,6 +64,10 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
     // TODO: check if player has room in inventory
 
+    function checkForLevelUp(woodcuttingExp, woodcuttingLevel) {
+        
+    }
+
     // check if chop is successful
     function rollForSuccess(woodcuttingLevel, treeType) {
         console.log("woodcutting exp before success: " + woodcuttingExp);
@@ -72,6 +76,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
         const index = woodcuttingLevel - 1; // account for 0-based indexing
         const successRate = CHOP_CHANCES[index].successRate;
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
+        const beginningLevel = woodcuttingLevel;
 
         // find tree object in LOGS array
         const treeObj = LOGS.find(obj => obj.treeType = treeType);
@@ -87,6 +92,14 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
             const newWoodcuttingExp = woodcuttingExp + treeObj.expGained;
             setWoodcuttingExp(newWoodcuttingExp);
             setIsChopping(false);
+
+            const currentLevel = determineLevel(newWoodcuttingExp);
+            if (beginningLevel !== currentLevel) {
+                setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${currentLevel}.`]);
+                // TODO: show "you can now chop oaks" at 15, etc.
+            }
+
+
             // TODO: add +1 logs to inventory
             console.log("woodcutting exp after success: " + newWoodcuttingExp);
             console.log("tree = unavailable");
@@ -94,7 +107,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
             setMessages(prev => [...prev, "Your axe splinters the bark. You take another swing."]);
             setTimeout(() => {
                 startChopping(woodcuttingLevel, treeObj.treeType);
-            }, 2400); // 2400 ms = 2.4 second gap between actions 
+            }, 2400); // 2400 ms = 2.4 second gap between rolls
         }
         // TODO: track level up, print message to log
     }
@@ -107,9 +120,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
         setIsChopping(true); // start chopping tree 
     
-        rollForSuccess(woodcuttingLevel, treeType); // initiate chopping logic 
-
-        // FIXME: get rollForSuccess to run every 2.4 seconds on failure instead of just running once 
+        rollForSuccess(woodcuttingLevel, treeType); // initiate chopping logic  
     }
 
     // TODO: if treeType = tree, setIsAvailable(false) and start timer 
