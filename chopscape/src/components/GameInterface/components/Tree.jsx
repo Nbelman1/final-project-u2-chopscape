@@ -16,6 +16,11 @@ import { CHOP_CHANCES } from '../../../data/chop-chance';
                 startRespawnTimer(respawnTimeMin, respawnTimeMax)
                 remove "Chop down" clickable option from tree object  */}
 
+// TODO: add status bar for isChopping 
+
+// TODO: add treeData object, use it as a prop
+// Refactor functions to use treeData instead of searching LOGS array each click
+
 const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp }) => {
 
     const [isChopping, setIsChopping] = useState(false);
@@ -49,7 +54,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
         for (const treeObj of LOGS) {
             if (treeType == treeObj.tree) {
                 if (woodcuttingLevel >= treeObj.levelRequired) {
-                    startChopping(woodcuttingLevel, "tree");
+                    startChopping(woodcuttingLevel, "Tree");
                     return true;
                 } else {
                     const levelRequired = treeObj.levelRequired;
@@ -76,11 +81,12 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
         const index = woodcuttingLevel - 1; // account for 0-based indexing
         const successRate = CHOP_CHANCES[index].successRate;
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
-        const beginningLevel = woodcuttingLevel;
+        const beginningLevel = woodcuttingLevel; // store level before chopping loop initiates
 
-        // find tree object in LOGS array
-        const treeObj = LOGS.find(obj => obj.treeType = treeType);
-        
+        const treeObj = LOGS.find(obj => obj.treeType = treeType); // tree object in LOGS that matches the name of treeType entered
+        const currentIndex = LOGS.findIndex(obj => obj.treeType === treeType); // index of current tree in LOGS array 
+        const higherTierTree = LOGS[currentIndex + 1]; // index of higher level tree
+
         if (!treeObj) {
             setMessages(prev => [...prev, "Error: tree type not found."]);
             setIsChopping(false);
@@ -96,7 +102,11 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
             const currentLevel = determineLevel(newWoodcuttingExp);
             if (beginningLevel !== currentLevel) {
                 setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${currentLevel}.`]);
-                // TODO: show "you can now chop oaks" at 15, etc.
+            }
+
+            console.log("higher tier tree " + higherTierTree.tree);
+            if (higherTierTree && currentLevel === higherTierTree.levelRequired) { // only show if there is a higher tier tree
+                setMessages(prev => [...prev, `You can now cut down ${higherTierTree.tree}s.`]);
             }
 
 
@@ -109,7 +119,6 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
                 startChopping(woodcuttingLevel, treeObj.treeType);
             }, 2400); // 2400 ms = 2.4 second gap between rolls
         }
-        // TODO: track level up, print message to log
     }
 
     // initial click on tree
@@ -123,7 +132,7 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
         rollForSuccess(woodcuttingLevel, treeType); // initiate chopping logic  
     }
 
-    // TODO: if treeType = tree, setIsAvailable(false) and start timer 
+    // TODO: if treeType = tree, setIsAvailable(false) and start respawn timer 
 
     function handleTreeClick() {
         if (!isTreeAvailable(isNodeAvailable)) return; // cancel action if tree node is not yet available

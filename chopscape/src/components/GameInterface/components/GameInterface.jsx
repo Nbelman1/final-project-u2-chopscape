@@ -7,7 +7,7 @@ const GameInterface = () => {
 
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
     const [messages, setMessages] = useState([]);
-    const [woodcuttingExp, setWoodcuttingExp] = useState(0);
+    const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
 
     return (
         <>
