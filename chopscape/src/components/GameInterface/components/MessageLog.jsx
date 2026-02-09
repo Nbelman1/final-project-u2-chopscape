@@ -1,8 +1,9 @@
 // clear message log on logout
 // display empty message on login
 
-// displays console message with timestamps
-
+// TODO: add timestamps
+// TODO: limit messages to 7 most recent 
+// TODO: if time, add a scroll bar
 
 const MessageLog = ({ messages = [] }) => {
 

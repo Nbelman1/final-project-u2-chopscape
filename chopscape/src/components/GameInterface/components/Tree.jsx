@@ -71,34 +71,44 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
 
         const index = woodcuttingLevel - 1; // account for 0-based indexing
         const successRate = CHOP_CHANCES[index].successRate;
-        const isSuccess = Math.random() < successRate; // success if rate is higher than roll
+        const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
 
         // find tree object in LOGS array
         const treeObj = LOGS.find(obj => obj.treeType = treeType);
         
         if (!treeObj) {
             setMessages(prev => [...prev, "Error: tree type not found."]);
+            setIsChopping(false);
+            return;
         }
 
-        if (isSuccess) {
+        if (isSuccessful) {
             setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
             const newWoodcuttingExp = woodcuttingExp + treeObj.expGained;
             setWoodcuttingExp(newWoodcuttingExp);
+            setIsChopping(false);
             // TODO: add +1 logs to inventory
             console.log("woodcutting exp after success: " + newWoodcuttingExp);
+            console.log("tree = unavailable");
+        } else {
+            setMessages(prev => [...prev, "Your axe splinters the bark. You take another swing."]);
+            setTimeout(() => {
+                startChopping(woodcuttingLevel, treeObj.treeType);
+            }, 2400); // 2400 ms = 2.4 second gap between actions 
         }
         // TODO: track level up, print message to log
     }
 
-    // throttle chopping action
+    // initial click on tree
     function startChopping(woodcuttingLevel, treeType) {
         console.log("running startChopping");
+        console.log("current level: " + woodcuttingLevel);
         if (isChopping) return; // stop action if player is already chopping 
+
         setIsChopping(true); // start chopping tree 
-        rollForSuccess(woodcuttingLevel, treeType);
-        setTimeout(() => {
-            setIsChopping(false);
-        }, 2400); // 2400 ms = 2.4 seconds
+    
+        rollForSuccess(woodcuttingLevel, treeType); // initiate chopping logic 
+
         // FIXME: get rollForSuccess to run every 2.4 seconds on failure instead of just running once 
     }
 
