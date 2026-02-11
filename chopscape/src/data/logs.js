@@ -1,6 +1,5 @@
-// holds data for trees
+// holds static data for trees
 // all times are measured in seconds
-// TODO: move to database when we learn how to send pull requests 
 
 export const LOGS = [
     { 
@@ -13,7 +12,7 @@ export const LOGS = [
         timeBetweenChops: 2.4, // roll successRate from chop-chance.js every chop
         respawnTimeMin: 36, // normal tree respawn randomly between 36s and 60s
         respawnTimeMax: 60, 
-        isAvailable: true // changes to false when tree is felled
+        imagePath: "/images/tree.png"
     },
     { 
         tree: "Oak tree",
@@ -25,7 +24,7 @@ export const LOGS = [
         timeBetweenChops: 2.4,
         respawnTimeMin: 27, // oak trees respawn consistently every 27s
         respawnTimeMax: 27, 
-        isAvailable: true
+        imagePath: "/images/oak-tree.png"
     },
     { 
         tree: "Willow tree",
@@ -37,6 +36,6 @@ export const LOGS = [
         timeBetweenChops: 2.4,
         respawnTimeMin: 14, // consistent respawn time
         respawnTimeMax: 14, 
-        isAvailable: true
+        imagePath: "/images/willow-tree.png"
     },
 ];
