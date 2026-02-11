@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Tree from './Tree';
 import MessageLog from './MessageLog';
+import { LOGS } from '../../../data/logs';
 
 
 const GameInterface = () => {
@@ -11,7 +12,14 @@ const GameInterface = () => {
 
     return (
         <>
-            <Tree isNodeAvailable={isNodeAvailable} setIsNodeAvailable={setIsNodeAvailable} setMessages={setMessages} woodcuttingExp={woodcuttingExp} setWoodcuttingExp={setWoodcuttingExp}/>
+            {LOGS.map((treeObj) => (
+                <Tree
+                    key={treeObj.tree}
+                    treeData={treeObj}
+                    woodcuttingLevel={currentLevel}
+                    rollForSuccess={rollForSuccess}
+                />
+            ))}
             <MessageLog messages={messages} />
         </>
     );

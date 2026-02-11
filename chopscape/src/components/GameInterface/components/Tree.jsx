@@ -1,7 +1,6 @@
 // pass tree data as prop, reference data/logs.js when clicked 
 
 import { useState } from 'react';
-import tree from '../assets/tree.png';
 import { EXP_TABLE } from '../../../data/levels';
 import { LOGS } from '../../../data/logs';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
@@ -18,13 +17,12 @@ import { CHOP_CHANCES } from '../../../data/chop-chance';
 
 // TODO: add status bar for isChopping 
 
-// TODO: add treeData object, use it as a prop
-// Refactor functions to use treeData instead of searching LOGS array each click
 
 const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp }) => {
 
     const [isChopping, setIsChopping] = useState(false);
     const [woodcuttingLevel, setWoodcuttingLevel] = useState(1);
+    const { tree, levelRequired, logType, expGained, harvestLimit, lifeTime, timeBetweenChops, respawnTimeMin, respawnTimeMax, imagePath } = treeData;
 
     // check if tree is available
     function isTreeAvailable(isNodeAvailable) {
@@ -144,13 +142,16 @@ const Tree = ({ isNodeAvailable, setMessages, woodcuttingExp, setWoodcuttingExp 
     }
 
     return (
-        <>
+        <div className='tree-container'>
             <img 
-                src={tree} alt='A standard tree' 
-                className='tree-size' 
-                onClick={handleTreeClick}
+                src={imagePath}
+                alt={`A ${tree}.`}
+                className='tree-size'
+                onClick={() => rollForSuccess(woodcuttingLevel, tree)}
             />
-        </>
+            <h3>{tree}</h3>
+            
+        </div>
     );
 };
 
