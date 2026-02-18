@@ -17,8 +17,6 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("combat");
 
-  console.log("Parent state: " + activeTab);
-
   return (
     <BrowserRouter>
       <Routes>

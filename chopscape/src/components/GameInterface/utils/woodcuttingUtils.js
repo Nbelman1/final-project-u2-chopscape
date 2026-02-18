@@ -1,10 +1,10 @@
 import { EXP_TABLE } from "../../../data/levels";
 
 // returns player's woodcutting level 
-export function determineLevel(woodcuttingExp) {
+export function determineLevel(exp) {
     let level = 1;
     for (const obj of EXP_TABLE) {
-        if (woodcuttingExp >= obj.expRequired) {
+        if (exp >= obj.expRequired) {
             level = obj.level;
         } else {
             break;

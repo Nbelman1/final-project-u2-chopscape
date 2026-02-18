@@ -26,6 +26,7 @@ const GameInterface = () => {
         }
     }
 
+    // if level requirement not met, display message
     function displayLevelRequired(treeObj) {
         const { tree, levelRequired } = treeObj;
 
@@ -36,70 +37,55 @@ const GameInterface = () => {
         return true;
     }
 
-    // display level up message if applicable
+    // on level up, display level up message 
     function displayLevelUp(currentExp, newExp) {
-        const beginningLevel = determineLevel(currentExp);
-        const levelAfterSuccess = determineLevel(newExp);
+        const preChopLevel = determineLevel(currentExp);
+        const postChopLevel = determineLevel(newExp);
 
-        if (beginningLevel !== currentLevel) {
-            setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${currentLevel}.`]);
+        if (preChopLevel !== postChopLevel) {
+            setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${postChopLevel}.`]);
         }
     }
 
-    // display message that higher tier tree is available
-    function displayNewMilestone(treeObj) {
-        const currentIndex = LOGS.findIndex(el => el.tree === treeObj.tree); // index of current tree in LOGS array 
-        const higherTierTree = LOGS[currentIndex + 1]; // index of higher level tree
-        
-        console.log("higher tier tree " + higherTierTree.tree);
-            if (higherTierTree && currentLevel === higherTierTree.levelRequired) { // only show if there is a higher tier tree
-                setMessages(prev => [...prev, `You can now cut down ${higherTierTree.tree}s.`]);
-            };
+    // if higher tier tree is unlocked, display message 
+    function displayNewMilestone(newExp) {
+        const currentLevel = determineLevel(newExp);
+        const unlockedTree = LOGS.find(el => el.levelRequired === currentLevel);
+                    
+        if (unlockedTree) {
+            setMessages(prev => [...prev, `You can now cut down ${unlockedTree.tree}s.`]);
+        };
     }
 
     // check if chop is successful
-    function rollForSuccess(woodcuttingLevel, treeType) {
-        console.log("woodcutting exp before success: " + woodcuttingExp);
-        console.log("running rollForSuccess");
+    function rollForSuccess(woodcuttingLevel, treeObj) {
 
         const index = woodcuttingLevel - 1; // account for 0-based indexing
         const successRate = CHOP_CHANCES[index].successRate;
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
-        const treeObj = LOGS.find(obj => obj.treeType = treeType); // tree object in LOGS that matches the name of treeType entered
         
-        if (!treeObj) {
-            setMessages(prev => [...prev, "Error: tree type not found."]);
-            setIsChopping(false);
-            return;
-        }
-
         if (isSuccessful) {
             setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
             const newExp = woodcuttingExp + treeObj.expGained;
 
-            displayLevelUp(woodcuttingExp, newExp);
-
             setWoodcuttingExp(newExp);
 
-            displayNewMilestone(treeObj);
+            displayLevelUp(woodcuttingExp, newExp);
+            displayNewMilestone(newExp);
 
             // TODO: add +1 logs to inventory
 
             // TODO: add logic to setIsAvailable(false) depending on tree type 
-            console.log("woodcutting exp after success: " + newExp);
-            console.log("tree = unavailable");
         } else {
             setMessages(prev => [...prev, "Your axe splinters the bark. You take another swing."]);
             setTimeout(() => {
-                startChopping(woodcuttingLevel, treeObj.treeType);
-            }, treeObj.timeBetweenChops); // 2400 ms = 2.4 second gap between rolls
+                startChopping(woodcuttingLevel, treeObj);
+            }, treeObj.timeBetweenChops); // 2.4 second gap between rolls
         }
     }
 
     // master chopping sequence
     function startChopping(woodcuttingLevel, treeObj) {
-        console.log("running startChopping");
-        console.log("leve before chopping: " + woodcuttingLevel);
 
         if (isChopping) {
             setMessages(prev => [...prev, "You are already busy chopping."]);
