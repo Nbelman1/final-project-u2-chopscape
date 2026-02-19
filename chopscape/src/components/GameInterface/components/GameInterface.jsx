@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Tree from './Tree';
 import MessageLog from './MessageLog';
 import { LOGS } from '../../../data/logs';
@@ -9,10 +9,18 @@ import { hasLevel } from '../utils/woodcuttingUtils';
 
 const GameInterface = () => {
 
+    // TODO: add logic to despawn the tree
+    //  add a timer to respawn it, 
+    // add a log item to your inventory, and a 
+    // add function to check if your inventory is full before letting you chop
+
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
     const [isChopping, setIsChopping] = useState(false);
     const [messages, setMessages] = useState([]);
     const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
+    
+    const [timeElapsed, setTimeElapsed] = useState(0);
+    const timerRef = useRef(null); // store and clear interval
 
     const currentLevel = determineLevel(woodcuttingExp);
 
@@ -33,8 +41,9 @@ const GameInterface = () => {
         if (!hasLevel(currentLevel, levelRequired)) {
             setMessages(prev => [...prev, `You need a Woodcutting level of ${treeObj.levelRequired} to chop down this ${tree}.`]);
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     // on level up, display level up message 
@@ -44,17 +53,45 @@ const GameInterface = () => {
 
         if (preChopLevel !== postChopLevel) {
             setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${postChopLevel}.`]);
+            setIsChopping(false);
         }
     }
 
     // if higher tier tree is unlocked, display message 
-    function displayNewMilestone(newExp) {
-        const currentLevel = determineLevel(newExp);
-        const unlockedTree = LOGS.find(el => el.levelRequired === currentLevel);
-                    
-        if (unlockedTree) {
+    function displayNewMilestone(currentExp, newExp) {
+        const preChopLevel = determineLevel(currentExp);
+        const postChopLevel = determineLevel(newExp);
+
+        const unlockedTree = LOGS.find(el => el.levelRequired === postChopLevel);
+        
+        console.log("unlocked tree", unlockedTree);
+
+        if (unlockedTree && preChopLevel !== postChopLevel) {
             setMessages(prev => [...prev, `You can now cut down ${unlockedTree.tree}s.`]);
         };
+    }
+
+    // start timer after first successful chop
+    function startDepletionTimer() {
+        // if there's a timer running, clear it 
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        // timer interval set to 1 second = 1000 ms
+        timerRef.current = setInterval(() => {
+            setTimeElapsed(prev => prev + 1000);
+        }, 1000);
+    }
+
+    // check if tree should fall after next successful chop
+    function isFinalChop(treeObj) {
+        return timeElapsed >= treeObj.lifeTime;
+    }
+
+    // clean up states/refs when tree is felled
+    function fellTree() {
+        clearInterval(timerRef.current);
+        setTimeElapsed(0);
+        setIsChopping(false);
     }
 
     // check if chop is successful
@@ -65,17 +102,28 @@ const GameInterface = () => {
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
         
         if (isSuccessful) {
-            setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
             const newExp = woodcuttingExp + treeObj.expGained;
 
-            setWoodcuttingExp(newExp);
+            if (timeElapsed === 0 && treeObj.lifeTime > 0) {
+                startDepletionTimer();
+            }
 
-            displayLevelUp(woodcuttingExp, newExp);
-            displayNewMilestone(newExp);
+            if (isFinalChop(treeObj)) {
+                setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
+                setWoodcuttingExp(newExp);
 
-            // TODO: add +1 logs to inventory
+                displayLevelUp(woodcuttingExp, newExp);
+                displayNewMilestone(woodcuttingExp, newExp)
 
-            // TODO: add logic to setIsAvailable(false) depending on tree type 
+                fellTree(treeObj);
+            } else {
+                setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
+                setWoodcuttingExp(newExp);
+
+                displayLevelUp(woodcuttingExp, newExp);
+                displayNewMilestone(woodcuttingExp, newExp);
+            }
+
         } else {
             setMessages(prev => [...prev, "Your axe splinters the bark. You take another swing."]);
             setTimeout(() => {
@@ -94,7 +142,7 @@ const GameInterface = () => {
 
         isTreeAvailable(treeObj); // check node availability
 
-        displayLevelRequired(treeObj); // check player's level
+        if (!displayLevelRequired(treeObj)) return; // check player's level. stop if player's level is too low
 
         setIsChopping(true); // start chopping tree 
         setMessages(prev => [...prev, "You swing your axe at the tree."]);
