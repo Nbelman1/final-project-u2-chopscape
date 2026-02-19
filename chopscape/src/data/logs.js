@@ -22,8 +22,8 @@ export const LOGS = [
         harvestLimit: Infinity, // harvest based on successRate and lifeTime
         lifeTime: 27000,
         timeBetweenChops: 2400,
-        respawnTimeMin: 27000, // consistent respawn time, every 27s
-        respawnTimeMax: 27000, 
+        respawnTimeMin: 8400, // consistent respawn time, every 8.4s
+        respawnTimeMax: 8400, 
         imagePath: "/images/oak-tree.png"
     },
     { 
@@ -34,8 +34,8 @@ export const LOGS = [
         harvestLimit: Infinity,  // harvest based on successRate and lifeTime
         lifeTime: 30000,
         timeBetweenChops: 2400,
-        respawnTimeMin: 14000, // consistent respawn time, every 14s
-        respawnTimeMax: 14000, 
+        respawnTimeMin: 8400, // consistent respawn time, every 8.4s
+        respawnTimeMax: 8400, 
         imagePath: "/images/willow-tree.png"
     },
 ];
