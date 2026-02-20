@@ -20,7 +20,7 @@ export const LOGS = [
         logType: "Oak logs",
         expGained: 37,
         harvestLimit: Infinity, // harvest based on successRate and lifeTime
-        lifeTime: 27000,
+        lifeTime: 5000, // TODO: change back to 27000
         timeBetweenChops: 2400,
         respawnTimeMin: 8400, // consistent respawn time, every 8.4s
         respawnTimeMax: 8400, 
@@ -32,7 +32,7 @@ export const LOGS = [
         logType: "Willow logs",
         expGained: 67,
         harvestLimit: Infinity,  // harvest based on successRate and lifeTime
-        lifeTime: 30000,
+        lifeTime: 5000, // TODO: change back to 30000
         timeBetweenChops: 2400,
         respawnTimeMin: 8400, // consistent respawn time, every 8.4s
         respawnTimeMax: 8400, 

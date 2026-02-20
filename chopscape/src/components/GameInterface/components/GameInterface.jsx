@@ -14,13 +14,9 @@ const GameInterface = () => {
     // add a log item to your inventory, and a 
     // add function to check if your inventory is full before letting you chop
 
-    const [isNodeAvailable, setIsNodeAvailable] = useState(true);
+    
     const [messages, setMessages] = useState([]);
     const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
-    
-    const [timeElapsed, setTimeElapsed] = useState(0);
-    const timeElapsedRef = useRef(0);
-    const timerRef = useRef(null); // store and clear interval
 
     const [isChopping, setIsChopping] = useState(false);
     const isChoppingRef = useRef(false);
@@ -75,65 +71,6 @@ const GameInterface = () => {
         };
     }
 
-    // start timer after first successful chop
-    function startDepletionTimer() {
-        // if there's a timer running, clear it 
-        if (timerRef.current) clearInterval(timerRef.current);
-
-        // timer interval set to 1000 ms (1 second)
-        timerRef.current = setInterval(() => {
-            timeElapsedRef.current += 1000; // update ref every 1 second
-            setTimeElapsed(prev => prev + 1000); // update state for UI
-        }, 1000);
-    }
-
-    // clean up states/refs when tree is felled
-    function fellTree(treeObj) {
-        clearInterval(timerRef.current);
-        setTimeElapsed(0);
-        timeElapsedRef.current = 0;
-        setIsChopping(false);
-        isChoppingRef.current = false;
-        setMessages(prev => [...prev, `With a mighty swing, you fell the ${treeObj.tree}.`]);
-    }
-
-    // check if chop is successful
-    function rollForSuccess(woodcuttingLevel, treeObj) {
-        if (!isChoppingRef.current) return;
-        
-        const currentTime = timeElapsedRef.current; // current time on depletion timer 
-        const successRate = CHOP_CHANCES[woodcuttingLevel -1 ].successRate; // account for 0-based indexing
-        const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
-
-        if (isSuccessful) {
-            const newExp = woodcuttingExp + treeObj.expGained;
-
-            // start timer on successful chop
-            if (currentTime === 0 && treeObj.lifeTime > 0) {
-                startDepletionTimer();
-            }
-
-            setWoodcuttingExp(newExp);
-            setMessages(prev => [...prev, `You get some ${treeObj.logType}.`]);
-            displayLevelUp(woodcuttingExp, newExp);
-            displayNewMilestone(woodcuttingExp, newExp)
-
-            if (currentTime >= treeObj.lifeTime) {
-                fellTree(treeObj);
-                return; 
-            }
-        } else {
-            setMessages(prev => [...prev, "Your axe splinters the bark. You take another swing."]);
-        }
-
-        // queue next axe swing
-        setTimeout(() => {
-            if (isChoppingRef.current) {    
-                rollForSuccess(woodcuttingLevel, treeObj);
-            }
-        }, treeObj.timeBetweenChops); // 2.4 second gap between rolls
-    }
-
     // master chopping sequence
     function startChopping(woodcuttingLevel, treeObj) {
 
@@ -157,12 +94,14 @@ const GameInterface = () => {
 
     return (
         <>
-            {LOGS.map((treeObj) => (
+            {LOGS.map((treeObj, index) => (
                 <Tree
-                    key={treeObj.tree}
+                    key={`{treeObj.tree}-${index}`}
                     treeData={treeObj}
                     woodcuttingLevel={currentLevel}
-                    onStartChopping={startChopping}
+                    onGainExp={(amount) => setWoodcuttingExp(prev => prev + amount)}
+                    onAddMessage={(msg) => setMessages(prev => [...prev, msg])}
+                    onAddToInventory={(log) => setInventory(prev => ({...prev, [log]: (prev[log] || 0) + 1}))}
                 />
             ))}
             <MessageLog messages={messages} />
