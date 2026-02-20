@@ -9,8 +9,8 @@ import { hasLevel } from '../utils/woodcuttingUtils';
 
 const GameInterface = () => {
 
-    // TODO: add logic to despawn the tree
-    //  add a timer to respawn it, 
+    // TODO: 
+    // add a timer to respawn it, 
     // add a log item to your inventory, and a 
     // add function to check if your inventory is full before letting you chop
 
@@ -82,31 +82,28 @@ const GameInterface = () => {
 
         // timer interval set to 1000 ms (1 second)
         timerRef.current = setInterval(() => {
-            timeElapsedRef.current + 1000; // update ref every 1 second
+            timeElapsedRef.current += 1000; // update ref every 1 second
             setTimeElapsed(prev => prev + 1000); // update state for UI
         }, 1000);
     }
 
     // clean up states/refs when tree is felled
-    function fellTree() {
+    function fellTree(treeObj) {
         clearInterval(timerRef.current);
         setTimeElapsed(0);
         timeElapsedRef.current = 0;
         setIsChopping(false);
         isChoppingRef.current = false;
+        setMessages(prev => [...prev, `With a mighty swing, you fell the ${treeObj.tree}.`]);
     }
 
-
-    // FIXME: stop player from chopping indefinitely 
     // check if chop is successful
     function rollForSuccess(woodcuttingLevel, treeObj) {
         if (!isChoppingRef.current) return;
         
-        const currentTime = timeElapsedRef.current;
+        const currentTime = timeElapsedRef.current; // current time on depletion timer 
         const successRate = CHOP_CHANCES[woodcuttingLevel -1 ].successRate; // account for 0-based indexing
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
-        
-        console.log("running rollForSuccess");
 
         if (isSuccessful) {
             const newExp = woodcuttingExp + treeObj.expGained;
