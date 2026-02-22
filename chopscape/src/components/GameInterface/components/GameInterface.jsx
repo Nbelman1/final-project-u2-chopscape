@@ -26,9 +26,7 @@ const GameInterface = () => {
 
     // on level up, display level up message 
     function displayLevelUp(newLevel) {
-
         setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${newLevel}.`]);
-
         stopGlobalChop();
     }
     
