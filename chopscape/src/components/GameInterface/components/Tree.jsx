@@ -48,20 +48,29 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
         }, 1000);
     }
 
+    // start timer after tree is felled
+    function startRespawnTimer() {
+        const { respawnTimeMin, respawnTimeMax } = treeData;
+        
+        const randomDelay = Math.floor(Math.random() * (respawnTimeMax - respawnTimeMin + 1)) + respawnTimeMin;
+
+        setTimeout(() => {
+            setIsNodeAvailable(true);
+        }, randomDelay);
+    }
+
     // clean up states/refs when tree is felled
     function fellTree(treeData) {
+
+        console.log("felling tree", treeData.tree);
+        console.log("is node available = false");
         clearInterval(timerRef.current);
-        setTimeElapsed(0);
-        timeElapsedRef.current = 0;
+        setIsNodeAvailable(() => false);
         onStopGlobalChop(false);
-        isChoppingRef.current = false;
         onAddMessage(`With a mighty swing, you fell the ${treeData.tree}.`);
+        timeElapsedRef.current = 0;
+        startRespawnTimer();
     }
-
-    function startRespawnTimer() {
-
-    }
-
 
     function handleLocalClick() {
         if (!isTreeAvailable) return;
@@ -72,35 +81,42 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
         }
 
         const canStart = onStartGlobalChop();
-        
+
         if (canStart) {
+            onAddMessage("You swing your axe at the tree.");
             rollForSuccess(woodcuttingLevel, treeData);
         }
     }
 
     // check if chop is successful
     function rollForSuccess(woodcuttingLevel, treeData) {
-        if (!isChoppingRef.current) return;
+        if (!isChoppingRef.current) return; // guard clause 
         
-        const currentTime = timeElapsedRef.current; // current time on depletion timer 
         const successRate = CHOP_CHANCES[woodcuttingLevel - 1].successRate; // account for 0-based indexing
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
 
         if (isSuccessful) {
 
             // start timer on successful chop
-            if (currentTime === 0 && treeData.lifeTime > 0) {
+            if (timeElapsedRef.current === 0 && treeData.lifeTime > 0) {
                 startDepletionTimer();
             }
             
             onAddMessage(`You get some ${treeData.logType}.`);
-            onGainExp(treeData.expGained);
+            const levelWasGained = onGainExp(treeData.expGained);
+            
+            if (levelWasGained) {
+                onStopGlobalChop();
+                return;
+            }
+
+            if (timeElapsedRef.current >= treeData.lifeTime) {
+                fellTree(treeData);
+                return;
+            }
+
             // onAddToInventory(treeData.logType);
 
-            if (currentTime >= treeData.lifeTime) {
-                fellTree(treeData);
-                return; 
-            }
         } else {
             onAddMessage("Your axe splinters the bark. You take another swing.");
         }
@@ -116,12 +132,12 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
     return (
         <div className='tree-container'>
             <img 
-                src={treeData.imagePath}
-                alt={`A ${treeData.tree}.`}
-                className='tree-size'
+                src={isNodeAvailable ? treeData.imagePath : '/images/stump.png'}
+                alt={isNodeAvailable ? `A ${treeData.tree}.` : 'A tree stump.'}
+                className={'tree-size'}
                 onClick={() => handleLocalClick()}
             />
-            <h3>{treeData.tree}</h3>
+            <h3>{isNodeAvailable ? treeData.tree : 'Stump'}</h3>
             
         </div>
     );

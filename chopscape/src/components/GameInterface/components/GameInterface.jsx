@@ -17,6 +17,7 @@ const GameInterface = () => {
     
     const [messages, setMessages] = useState([]);
     const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
+    const expRef = useRef(woodcuttingExp);
 
     const [isChopping, setIsChopping] = useState(false);
     const isChoppingRef = useRef(false);
@@ -24,33 +25,45 @@ const GameInterface = () => {
     const currentLevel = determineLevel(woodcuttingExp);
 
     // on level up, display level up message 
-    function displayLevelUp(currentExp, newExp) {
-        const preChopLevel = determineLevel(currentExp);
-        const postChopLevel = determineLevel(newExp);
+    function displayLevelUp(newLevel) {
 
-        if (preChopLevel !== postChopLevel) {
-            setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${postChopLevel}.`]);
-            setIsChopping(false);
-            isChoppingRef.current = false;
-        }
+        setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${newLevel}.`]);
+
+        stopGlobalChop();
     }
     
     // if higher tier tree is unlocked, display message 
-    function displayNewMilestone(currentExp, newExp) {
-        const preChopLevel = determineLevel(currentExp);
-        const postChopLevel = determineLevel(newExp);
-
-        if (unlockedTree && preChopLevel !== postChopLevel) {
+    function displayNewMilestone(newLevel) {
+        const unlockedTree = LOGS.find(el => el.levelRequired === newLevel);
+        if (unlockedTree) {
             setMessages(prev => [...prev, `You can now cut down ${unlockedTree.tree}s.`]);
         };
     }
 
-    function startGlobalChop() {
+    function handleGainExp(amount) {
+        const prevExp = expRef.current;
+        const newExp = prevExp + amount;
+        
+        expRef.current = newExp;
+        setWoodcuttingExp(newExp);
+
+        const preChopLevel = determineLevel(prevExp);
+        const postChopLevel = determineLevel(newExp);
+
+        if (postChopLevel > preChopLevel) {
+            displayLevelUp(postChopLevel);
+            displayNewMilestone(postChopLevel);
+            return true; // level up, stop chopping
+        }
+
+        return false; // nothing to see here - keep chopping
+    }
+
+        function startGlobalChop() {
         if (isChoppingRef.current) {
             setMessages(prev => [...prev, "You are already busy chopping."]);
             return; // stop action if player is already chopping
         }
-        setMessages(prev => [...prev, "You swing your axe at the tree."]);
         setIsChopping(true);
         isChoppingRef.current = true;
         return true;
@@ -59,18 +72,6 @@ const GameInterface = () => {
     function stopGlobalChop() {
         setIsChopping(false);
         isChoppingRef.current = false;
-    }
-
-    function handleGainExp(amount) {
-        const prevExp = woodcuttingExp; // exp before chop
-        const newExp = prevExp + amount;
-
-        displayLevelUp(prevExp, newExp); 
-        displayNewMilestone(prevExp, newExp);
-
-        setWoodcuttingExp(newExp);
-
-        return newExp;
     }
 
     return (
