@@ -23,28 +23,6 @@ const GameInterface = () => {
 
     const currentLevel = determineLevel(woodcuttingExp);
 
-    // check if tree is available
-    function isTreeAvailable() {
-        if (isNodeAvailable) {
-            return true;
-        } else if (!isNodeAvailable) {
-            setMessages(prev => [...prev, "Please wait for tree to grow back."]);
-            return false;
-        }
-    }
-
-    // if level requirement not met, display message
-    function displayLevelRequired(treeObj) {
-        const { tree, levelRequired } = treeObj;
-
-        if (!hasLevel(currentLevel, levelRequired)) {
-            setMessages(prev => [...prev, `You need a Woodcutting level of ${treeObj.levelRequired} to chop down this ${tree}.`]);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     // on level up, display level up message 
     function displayLevelUp(currentExp, newExp) {
         const preChopLevel = determineLevel(currentExp);
@@ -56,41 +34,44 @@ const GameInterface = () => {
             isChoppingRef.current = false;
         }
     }
-
+    
     // if higher tier tree is unlocked, display message 
     function displayNewMilestone(currentExp, newExp) {
         const preChopLevel = determineLevel(currentExp);
         const postChopLevel = determineLevel(newExp);
-
-        const unlockedTree = LOGS.find(el => el.levelRequired === postChopLevel);
-        
-        console.log("unlocked tree", unlockedTree);
 
         if (unlockedTree && preChopLevel !== postChopLevel) {
             setMessages(prev => [...prev, `You can now cut down ${unlockedTree.tree}s.`]);
         };
     }
 
-    // master chopping sequence
-    function startChopping(woodcuttingLevel, treeObj) {
-
-        if (isChopping) {
+    function startGlobalChop() {
+        if (isChoppingRef.current) {
             setMessages(prev => [...prev, "You are already busy chopping."]);
-            return; // stop action if player is already chopping 
+            return; // stop action if player is already chopping
         }
-
-        isTreeAvailable(treeObj); // check node availability
-
-        if (!displayLevelRequired(treeObj)) return; // check player's level. stop if player's level is too low
-
-        setIsChopping(true); // start chopping tree 
-        isChoppingRef.current = true;
         setMessages(prev => [...prev, "You swing your axe at the tree."]);
-        
-        // initiate chopping logic
-        rollForSuccess(woodcuttingLevel, treeObj);
+        setIsChopping(true);
+        isChoppingRef.current = true;
+        return true;
     }
 
+    function stopGlobalChop() {
+        setIsChopping(false);
+        isChoppingRef.current = false;
+    }
+
+    function handleGainExp(amount) {
+        const prevExp = woodcuttingExp; // exp before chop
+        const newExp = prevExp + amount;
+
+        displayLevelUp(prevExp, newExp); 
+        displayNewMilestone(prevExp, newExp);
+
+        setWoodcuttingExp(newExp);
+
+        return newExp;
+    }
 
     return (
         <>
@@ -99,9 +80,12 @@ const GameInterface = () => {
                     key={`{treeObj.tree}-${index}`}
                     treeData={treeObj}
                     woodcuttingLevel={currentLevel}
-                    onGainExp={(amount) => setWoodcuttingExp(prev => prev + amount)}
+                    isChoppingRef={isChoppingRef}
+                    onGainExp={handleGainExp}
                     onAddMessage={(msg) => setMessages(prev => [...prev, msg])}
                     onAddToInventory={(log) => setInventory(prev => ({...prev, [log]: (prev[log] || 0) + 1}))}
+                    onStartGlobalChop={startGlobalChop}
+                    onStopGlobalChop={stopGlobalChop}
                 />
             ))}
             <MessageLog messages={messages} />

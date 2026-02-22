@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { CHOP_CHANCES } from '../../../data/chop-chance';
 // import { startChopping } from './GameInterface';
 
 {/* TODO: add function chopDown (woodcuttingLevel, treeType, axeType): 
@@ -14,7 +15,7 @@ import { useRef, useState } from 'react';
 // TODO: add status bar for isChopping 
 
 
-const Tree = ({ treeData, woodcuttingLevel, onStartChopping }) => {
+const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop }) => {
     
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
     const [timeElapsed, setTimeElapsed] = useState(0);
@@ -23,6 +24,17 @@ const Tree = ({ treeData, woodcuttingLevel, onStartChopping }) => {
     const timeElapsedRef = useRef(0);
 
     // TODO: check if player has room in inventory
+
+
+    // check if tree is available
+    function isTreeAvailable(isNodeAvailable) {
+        if (isNodeAvailable) {
+            return true;
+        } else if (!isNodeAvailable) {
+            setMessages(prev => [...prev, "The tree needs time to grow."]);
+            return false;
+        }
+    }
 
     // start timer after first successful chop
     function startDepletionTimer() {
@@ -41,7 +53,7 @@ const Tree = ({ treeData, woodcuttingLevel, onStartChopping }) => {
         clearInterval(timerRef.current);
         setTimeElapsed(0);
         timeElapsedRef.current = 0;
-        setIsChopping(false);
+        onStopGlobalChop(false);
         isChoppingRef.current = false;
         onAddMessage(`With a mighty swing, you fell the ${treeData.tree}.`);
     }
@@ -50,28 +62,40 @@ const Tree = ({ treeData, woodcuttingLevel, onStartChopping }) => {
 
     }
 
+
+    function handleLocalClick() {
+        if (!isTreeAvailable) return;
+
+        if (woodcuttingLevel < treeData.levelRequired) {
+            onAddMessage(`You need a Woodcutting level of ${treeData.levelRequired} to chop down this ${treeData.tree}.`);
+            return;
+        }
+
+        const canStart = onStartGlobalChop();
+        
+        if (canStart) {
+            rollForSuccess(woodcuttingLevel, treeData);
+        }
+    }
+
     // check if chop is successful
     function rollForSuccess(woodcuttingLevel, treeData) {
         if (!isChoppingRef.current) return;
         
         const currentTime = timeElapsedRef.current; // current time on depletion timer 
-        const successRate = CHOP_CHANCES[woodcuttingLevel -1 ].successRate; // account for 0-based indexing
+        const successRate = CHOP_CHANCES[woodcuttingLevel - 1].successRate; // account for 0-based indexing
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
 
         if (isSuccessful) {
-            const newExp = woodcuttingExp + treeData.expGained;
 
             // start timer on successful chop
             if (currentTime === 0 && treeData.lifeTime > 0) {
                 startDepletionTimer();
             }
-
-            onGainExp(treeData.expGained);
+            
             onAddMessage(`You get some ${treeData.logType}.`);
-            onAddToInventory(treeData.logType);
-
-            displayLevelUp(woodcuttingExp, newExp);
-            displayNewMilestone(woodcuttingExp, newExp)
+            onGainExp(treeData.expGained);
+            // onAddToInventory(treeData.logType);
 
             if (currentTime >= treeData.lifeTime) {
                 fellTree(treeData);
@@ -95,7 +119,7 @@ const Tree = ({ treeData, woodcuttingLevel, onStartChopping }) => {
                 src={treeData.imagePath}
                 alt={`A ${treeData.tree}.`}
                 className='tree-size'
-                onClick={() => onStartChopping(woodcuttingLevel, treeData)}
+                onClick={() => handleLocalClick()}
             />
             <h3>{treeData.tree}</h3>
             

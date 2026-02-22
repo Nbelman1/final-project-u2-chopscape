@@ -29,8 +29,6 @@ const InterfaceTabs = ({ activeTab, setActiveTab }) => {
         );
     };
 
-    console.log("Child prop: " + activeTab);
-
     return (
         <div className={`panel-wrapper panel-wrapper-${activeTab}`}>
             <div className="tabs-row top-tabs">
