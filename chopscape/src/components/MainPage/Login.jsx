@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Login = () => {
     return (
         <>
@@ -12,7 +14,7 @@ const Login = () => {
               <input type="password" id="password" name="password" placeholder="***" required />
             </fieldset>
 
-            <button>Log In</button>
+            <Link to='/game'>Log In</Link>
         </>
     );
 };

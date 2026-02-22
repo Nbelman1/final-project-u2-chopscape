@@ -1,4 +1,3 @@
-// TODO: add icons for each tab
 const TABS = [
     {id: "combat", icon: "combat-options.png", label: "Combat options", position: "top"},
     {id: "skills", icon: "skills.png", label: "Skills", position: "top"},
@@ -8,7 +7,7 @@ const TABS = [
     {id: "locked", icon: "lock.png", label: "Locked", position: "bottom"}
 ];
 
-const InterfaceTabs = ({ activeTab, onTabClick }) => {
+const InterfaceTabs = ({ activeTab, setActiveTab }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
@@ -20,7 +19,7 @@ const InterfaceTabs = ({ activeTab, onTabClick }) => {
             // if tab selected is active tab, its className = "active"
             className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
             label={tab.label}
-            onClick={() => onTabClick(tab.id)}
+            onClick={() => setActiveTab(tab.id)}
         >
             <img 
                 src={`/images/${tab.icon}`}
@@ -31,7 +30,7 @@ const InterfaceTabs = ({ activeTab, onTabClick }) => {
     };
 
     return (
-        <div className="panel-wrapper">
+        <div className={`panel-wrapper panel-wrapper-${activeTab}`}>
             <div className="tabs-row top-tabs">
                 {topTabs.map(renderTab)}
             </div>

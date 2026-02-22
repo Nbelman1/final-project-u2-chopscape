@@ -19,6 +19,40 @@
     width: 50px;
 }
 
+/* TODO: delete colored panel-wrapper styles */
 .panel-wrapper {
     border: 1px solid black;
+}
+
+.panel-wrapper-combat {
+    border: 1px solid red;
+}
+
+.panel-wrapper-skills {
+    border: 1px solid orange;
+}
+
+.panel-wrapper-inventory {
+    border: 1px solid yellow;
+}
+
+.panel-wrapper-equipment {
+    border: 1px solid green;
+}
+
+.panel-wrapper-logout {
+    border: 1px solid blue;
+}
+
+.panel-wrapper-locked {
+    border: 1px solid purple;
+}
+
+.message-log-container {
+    border: 1px solid brown;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
 }
