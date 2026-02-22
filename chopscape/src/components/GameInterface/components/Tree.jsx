@@ -94,22 +94,17 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
 
         if (isSuccessful) {
-            // onAddToInventory(treeData.logType);
-            
+            onAddToInventory(treeData.logType);
             onAddMessage(`You get some ${treeData.logType}.`);
-            
-            // start timer on successful chop
+            // start timer
             if (timeElapsedRef.current === 0 && treeData.lifeTime > 0) {
                 startDepletionTimer();
             }
-
             // check if tree should fall
             if (timeElapsedRef.current >= treeData.lifeTime) {
                 fellTree(treeData);
             }
-
             const levelWasGained = onGainExp(treeData.expGained);
-
             // check for level up
             if (levelWasGained) return;
 

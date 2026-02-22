@@ -24,6 +24,19 @@ const GameInterface = () => {
 
     const currentLevel = determineLevel(woodcuttingExp);
 
+    const [inventory, setInventory] = useState({
+        "Logs": 0,
+        "Oak logs": 0,
+        "Willow logs": 0
+    });
+
+    function handleAddToInventory(logType) {
+        setInventory(prev => ({
+            ...prev,
+            [logType]: prev[logType] + 1
+        }));
+    }
+
     // on level up, display level up message 
     function displayLevelUp(newLevel) {
         setMessages(prev => [...prev, `Congratulations! You just advanced a Woodcutting level. You are now level ${newLevel}.`]);
@@ -82,7 +95,7 @@ const GameInterface = () => {
                     isChoppingRef={isChoppingRef}
                     onGainExp={handleGainExp}
                     onAddMessage={(msg) => setMessages(prev => [...prev, msg])}
-                    onAddToInventory={(log) => setInventory(prev => ({...prev, [log]: (prev[log] || 0) + 1}))}
+                    onAddToInventory={handleAddToInventory}
                     onStartGlobalChop={startGlobalChop}
                     onStopGlobalChop={stopGlobalChop}
                 />

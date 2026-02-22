@@ -1,10 +1,7 @@
 const TABS = [
-    {id: "combat", icon: "combat-options.png", label: "Combat options", position: "top"},
     {id: "skills", icon: "skills.png", label: "Skills", position: "top"},
     {id: "inventory", icon: "inventory.png", label: "Inventory", position: "top"},
-    {id: "equipment", icon: "worn-equipment.png", label: "Worn equipment", position: "bottom"},
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
-    {id: "locked", icon: "lock.png", label: "Locked", position: "bottom"}
 ];
 
 const InterfaceTabs = ({ activeTab, setActiveTab }) => {
