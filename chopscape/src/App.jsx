@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
-import './components/UserInterface/InterfaceTabs/interface-styles.css';
-import './components/GameInterface/game-interface-styles.css';
+import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
+import './components/GameInterface/GameInterface.css';
 import InterfaceTabs from './components/UserInterface/InterfaceTabs/InterfaceTabs';
 import Home from './components/MainPage/Home';
 import CreateAccount from './components/MainPage/CreateAccount';
 import Login from './components/MainPage/Login';
 import GameInterface from './components/GameInterface/components/GameInterface';
-import MessageLog from './components/GameInterface/components/MessageLog';
+import MessageLog from './components/UserInterface/InterfaceTabs/MessageLog';
 import MainLayout from './components/MainPage/MainLayout';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
@@ -17,7 +17,6 @@ import { LOGS } from './data/logs';
 
 function App() {
 
-  const [activeTab, setActiveTab] = useState("skills");
   const [inventory, setInventory] = useState(Array(28).fill(null));
   const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
   const [messages, setMessages] = useState([]);
@@ -77,7 +76,7 @@ function App() {
   function handleStartGlobalChop() {
     if (isChoppingRef.current) {
         setMessages(prev => [...prev, "You are already busy chopping."]);
-        return; // stop action if player is already chopping
+        return false; // stop action if player is already chopping
     }
     setIsChopping(true);
     isChoppingRef.current = true;
@@ -125,15 +124,15 @@ function App() {
               onAddToInventory={handleAddToInventory}
               onAddMessage={handleAddMessage}
             />
-            <MessageLog />
-            <InterfaceTabs 
-              inventory={inventory}
-              activeTab={activeTab} 
-              messages={messages}
-              woodcuttingExp={woodcuttingExp}
-              setActiveTab={setActiveTab}
-              onDrop={handleDropItem}
-            />
+            <div className='interface-container'>
+              <MessageLog messages={messages} />
+              <InterfaceTabs 
+                inventory={inventory}
+                messages={messages}
+                woodcuttingExp={woodcuttingExp}
+                onDrop={handleDropItem}
+              />
+            </div>
           </div>
         }>
         </Route>
