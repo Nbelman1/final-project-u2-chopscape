@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
-// import { startChopping } from './GameInterface';
 
 {/* TODO: add function chopDown (woodcuttingLevel, treeType, axeType): 
                 check that tree isAvailable
@@ -15,7 +14,7 @@ import { CHOP_CHANCES } from '../../../data/chop-chance';
 // TODO: add status bar for isChopping 
 
 
-const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop }) => {
+const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop, inventory }) => {
     
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
     const [timeElapsed, setTimeElapsed] = useState(0);
@@ -73,7 +72,13 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
     function handleLocalClick() {
         if (!isTreeAvailable) return;
 
-        if (woodcuttingLevel < treeData.levelRequired) {
+        const isFull = !inventory.includes(null);
+        if(isFull) {
+            onAddMessage("Your inventory is too full to hold any more logs.");
+            return;
+        }
+
+        if (currentLevel < treeData.levelRequired) {
             onAddMessage(`You need a Woodcutting level of ${treeData.levelRequired} to chop down this ${treeData.tree}.`);
             return;
         }
@@ -82,15 +87,21 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
 
         if (canStart) {
             onAddMessage("You swing your axe at the tree.");
-            rollForSuccess(woodcuttingLevel, treeData);
+            rollForSuccess(currentLevel, treeData);
         }
     }
 
     // check if chop is successful
-    function rollForSuccess(woodcuttingLevel, treeData) {
+    function rollForSuccess(currentLevel, treeData) {
         if (!isChoppingRef.current) return; // guard clause 
         
-        const successRate = CHOP_CHANCES[woodcuttingLevel - 1].successRate; // account for 0-based indexing
+        const levelIndex = currentLevel - 1;
+        const chopData = CHOP_CHANCES[levelIndex]; // account for 0-based indexing
+        if(!chopData) {
+            console.log("could not find data for level:", currentLevel);
+            return;
+        }
+        const successRate = chopData.successRate;
         const isSuccessful = Math.random() < successRate; // success if rate is higher than roll
 
         if (isSuccessful) {
@@ -115,7 +126,7 @@ const Tree = ({ treeData, woodcuttingLevel, isChoppingRef, onGainExp, onAddMessa
         // queue next axe swing
         setTimeout(() => {
             if (isChoppingRef.current) {    
-                rollForSuccess(woodcuttingLevel, treeData);
+                rollForSuccess(currentLevel, treeData);
             }
         }, treeData.timeBetweenChops); // 2.4 second gap between rolls
     }
