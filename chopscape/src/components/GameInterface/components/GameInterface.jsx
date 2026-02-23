@@ -1,16 +1,14 @@
 import { useRef, useState } from 'react';
 import Tree from './Tree';
-import MessageLog from './MessageLog';
+import MessageLog from '../../UserInterface/InterfaceTabs/MessageLog';
 import { LOGS } from '../../../data/logs';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
 import { determineLevel } from '../utils/woodcuttingUtils';
 import { hasLevel } from '../utils/woodcuttingUtils';
 
-
 const GameInterface = ({ inventory, messages, onAddToInventory, onAddMessage, woodcuttingExp, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChoppingRef }) => {
 
     // TODO: 
-    // add a timer to respawn it, 
     // add a log item to your inventory, and a 
     // add function to check if your inventory is full before letting you chop
 
@@ -30,7 +28,6 @@ const GameInterface = ({ inventory, messages, onAddToInventory, onAddMessage, wo
                     onStopGlobalChop={onStopGlobalChop}
                 />
             ))}
-            <MessageLog messages={messages} />
         </>
     );
 };

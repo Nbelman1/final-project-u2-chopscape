@@ -1,18 +1,7 @@
 import { useRef, useState } from 'react';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
 
-{/* TODO: add function chopDown (woodcuttingLevel, treeType, axeType): 
-                check that tree isAvailable
-                check that woodcuttingLevel >= levelRequired
-                start seconds timer
-                every timeBetweenChops, roll successRate from chop-chance.js
-                if normal tree {after successful chop, isAvailable = false, add message to MessageLog}
-                    else if other tree {after lifeTime seconds, isAvailable = false}
-                startRespawnTimer(respawnTimeMin, respawnTimeMax)
-                remove "Chop down" clickable option from tree object  */}
-
 // TODO: add status bar for isChopping 
-
 
 const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop, inventory }) => {
     
@@ -21,6 +10,9 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
 
     const timerRef = useRef(null); // store and clear interval
     const timeElapsedRef = useRef(0);
+    const localActionTimeoutRef = useRef(null);
+
+    const activeSessionId = useRef(0); // current chopping loop
 
     // TODO: check if player has room in inventory
 
@@ -61,9 +53,17 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
 
     // clean up states/refs when tree is felled
     function fellTree(treeData) {
+        activeSessionId.current += 1;
+        onStopGlobalChop();
+
+        if (localActionTimeoutRef.current) {
+            clearTimeout(localActionTimeoutRef.current);
+        }
+        
+        timeElapsedRef.current = 0;
         clearInterval(timerRef.current);
-        setIsNodeAvailable(() => false);
-        onStopGlobalChop(false);
+        setIsNodeAvailable(false);
+        
         onAddMessage(`With a mighty swing, you fell the ${treeData.tree}.`);
         timeElapsedRef.current = 0;
         startRespawnTimer();
@@ -86,13 +86,22 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
         const canStart = onStartGlobalChop();
 
         if (canStart) {
+            activeSessionId.current += 1;
+            const sessionId = activeSessionId.current;
             onAddMessage("You swing your axe at the tree.");
-            rollForSuccess(currentLevel, treeData);
+            rollForSuccess(currentLevel, treeData, sessionId);
         }
     }
 
     // check if chop is successful
-    function rollForSuccess(currentLevel, treeData) {
+    function rollForSuccess(currentLevel, treeData, sessionId) {
+        console.log("chop tick for ", treeData.tree, " - global status: ", isChoppingRef.current);
+
+        if (!isChoppingRef.current || sessionId !== activeSessionId.current) {
+            console.log(`killing ghost loop for session ${sessionId}`);
+            return;
+        }
+
         if (!isChoppingRef.current) return; // guard clause 
         
         const levelIndex = currentLevel - 1;
@@ -113,6 +122,7 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
             }
             // check if tree should fall
             if (timeElapsedRef.current >= treeData.lifeTime) {
+                console.log("checking ", treeData.tree, ": timer is ", timeElapsedRef.current, " / need ", treeData.lifeTime);
                 fellTree(treeData);
             }
             const levelWasGained = onGainExp(treeData.expGained);
@@ -124,9 +134,9 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
         }
 
         // queue next axe swing
-        setTimeout(() => {
-            if (isChoppingRef.current) {    
-                rollForSuccess(currentLevel, treeData);
+        localActionTimeoutRef.current = setTimeout(() => {
+            if (isChoppingRef.current && sessionId === activeSessionId.current) {    
+                rollForSuccess(currentLevel, treeData, sessionId);
             }
         }, treeData.timeBetweenChops); // 2.4 second gap between rolls
     }

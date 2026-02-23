@@ -1,6 +1,6 @@
 import InventoryPanel from "./InventoryPanel";
 import SkillsPanel from "./SkillsPanel";
-import './interface-styles.css';
+import './InterfaceTabs.css';
 
 const TABS = [
     {id: "skills", icon: "skills.png", label: "Skills", position: "top"},
