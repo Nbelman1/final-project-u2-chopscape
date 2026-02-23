@@ -1,0 +1,9 @@
+.message-log {
+  height: 190px;
+  width: vw;
+  background-color: rgba(0, 0, 0, 0.7); /* translucent black */
+  color: #ffffff;
+  padding: 10px;
+  overflow-y: auto; /* auto scroll */
+  border: 2px solid #383023;
+}
