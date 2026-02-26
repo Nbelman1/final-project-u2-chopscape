@@ -1,5 +1,6 @@
 import InventoryPanel from "./InventoryPanel";
 import SkillsPanel from "./SkillsPanel";
+import LogoutMenu from "./LogoutMenu";
 import './InterfaceTabs.css';
 
 const TABS = [
@@ -8,7 +9,7 @@ const TABS = [
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
 ];
 
-const InterfaceTabs = ({ activeTab, setActiveTab, inventory, handleDropItem }) => {
+const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
@@ -39,10 +40,11 @@ const InterfaceTabs = ({ activeTab, setActiveTab, inventory, handleDropItem }) =
                 {activeTab === 'inventory' && (
                     <InventoryPanel
                         inventory={inventory}
-                        onDropItem={handleDropItem}
+                        onDropItem={onDropItem}
                     />
                 )}
-                {activeTab == 'skills' && <SkillsPanel />}
+                {activeTab === 'skills' && <SkillsPanel />}
+                {activeTab === 'logout' && <LogoutMenu />}
             </div>
 
             <div className="tabs-row bottom-tabs">

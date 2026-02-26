@@ -21,6 +21,7 @@ function App() {
   const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
+  const [activeTab, setActiveTab] = useState("skills");
   
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
@@ -130,6 +131,8 @@ function App() {
                 inventory={inventory}
                 messages={messages}
                 woodcuttingExp={woodcuttingExp}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
                 onDrop={handleDropItem}
               />
             </div>

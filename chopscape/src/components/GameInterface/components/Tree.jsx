@@ -14,9 +14,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
 
     const activeSessionId = useRef(0); // current chopping loop
 
-    // TODO: check if player has room in inventory
-
-
     // check if tree is available
     function isTreeAvailable(isNodeAvailable) {
         if (isNodeAvailable) {

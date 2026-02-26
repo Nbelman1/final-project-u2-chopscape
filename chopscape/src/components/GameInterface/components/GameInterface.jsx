@@ -8,10 +8,6 @@ import { hasLevel } from '../utils/woodcuttingUtils';
 
 const GameInterface = ({ inventory, messages, onAddToInventory, onAddMessage, woodcuttingExp, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChoppingRef }) => {
 
-    // TODO: 
-    // add a log item to your inventory, and a 
-    // add function to check if your inventory is full before letting you chop
-
     return (
         <>
             {LOGS.map((treeObj, index) => (

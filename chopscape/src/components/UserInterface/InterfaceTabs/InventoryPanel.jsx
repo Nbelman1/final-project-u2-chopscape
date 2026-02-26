@@ -1,22 +1,20 @@
-// right now all identical items stack on one inventory slot
-// max number of stacked items = 28
-// can unstack later when I incorporate drag and drop 
+import { LOGS } from "../../../data/logs";
 
-const invItems = [];
-
-const InventoryPanel = ({ inventory, onDropItem, LOGS }) => {
+const InventoryPanel = ({ inventory, onDropItem }) => {
     return (
         <div className="inventory-grid">
             {inventory.map((item, index) => {
                 // check if slot has an item in it; add name if it does
-                const logData = item ? LOGS.find(el => el.logType === item.name) : null;
+                const logData = item && item.name ? 
+                    LOGS.find(el => el.logType === item.name) 
+                    : null;
 
                 return (
                     <div key={index} className="inventory-slot">
-                    {item ? (
+                    {item && logData ? (
                         <>
                             <img 
-                                src={logData?.imagePath}
+                                src={logData?.logImagePath}
                                 alt={item.name}
                                 className="inventory-icon"
                                 onContextMenu={(e) => {
