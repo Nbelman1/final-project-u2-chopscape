@@ -1,30 +1,35 @@
-import { useRef, useState } from 'react';
 import Tree from './Tree';
-import MessageLog from '../../UserInterface/InterfaceTabs/MessageLog';
 import { LOGS } from '../../../data/logs';
-import { CHOP_CHANCES } from '../../../data/chop-chance';
-import { determineLevel } from '../utils/woodcuttingUtils';
-import { hasLevel } from '../utils/woodcuttingUtils';
 
-const GameInterface = ({ inventory, messages, onAddToInventory, onAddMessage, woodcuttingExp, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChoppingRef }) => {
+const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChoppingRef }) => {
+
+    // render 4 Trees, 2 Oak trees, 1 Willow tree
+    const forest = ["Tree", "Tree", "Tree", "Tree", "Oak tree", "Oak tree", "Willow tree"];
 
     return (
-        <>
-            {LOGS.map((treeObj, index) => (
-                <Tree
-                    key={`{treeObj.tree}-${index}`}
-                    treeData={treeObj}
-                    currentLevel={currentLevel}
-                    inventory={inventory}
-                    isChoppingRef={isChoppingRef}
-                    onGainExp={onGainExp}
-                    onAddMessage={onAddMessage}
-                    onAddToInventory={onAddToInventory}
-                    onStartGlobalChop={onStartGlobalChop}
-                    onStopGlobalChop={onStopGlobalChop}
-                />
-            ))}
-        </>
+        <div className='tree-grid'>
+            {forest.map((treeName, index) => {
+                console.log(`Rendering tree ${index}: ${treeName}`);
+                const treeObj = LOGS.find(el => el.tree === treeName);
+
+                if (!treeObj) return null;
+                
+                return (
+                    <Tree
+                        key={`${treeName}-${index}`}
+                        treeData={treeObj}
+                        currentLevel={currentLevel}
+                        inventory={inventory}
+                        isChoppingRef={isChoppingRef}
+                        onGainExp={onGainExp}
+                        onAddMessage={onAddMessage}
+                        onAddToInventory={onAddToInventory}
+                        onStartGlobalChop={onStartGlobalChop}
+                        onStopGlobalChop={onStopGlobalChop}
+                    />
+                );
+            })}
+        </div>
     );
 };
 

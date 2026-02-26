@@ -96,7 +96,7 @@ function App() {
     if (unlockedTree) {
       handleAddMessage(`You can now cut down ${unlockedTree.tree}s.`);
     }
-}
+  }
 
   return (
     <BrowserRouter>
