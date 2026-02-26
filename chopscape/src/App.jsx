@@ -47,6 +47,7 @@ function App() {
     });
   }
 
+  // TODO: fix handleDropItem (onDropItem is not a function at onClick)
   function handleDropItem(index) {
     setInventory(prev => {
       const newInventory = [...prev];
@@ -133,7 +134,7 @@ function App() {
                 woodcuttingExp={woodcuttingExp}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                onDrop={handleDropItem}
+                onDropItem={handleDropItem}
               />
             </div>
           </div>

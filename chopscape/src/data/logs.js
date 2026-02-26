@@ -39,6 +39,6 @@ export const LOGS = [
         respawnTimeMin: 8400, // consistent respawn time, every 8.4s
         respawnTimeMax: 8400, 
         imagePath: "/images/willow-tree.png",
-        logImagePath: "/images/willog-logs.png"
+        logImagePath: "/images/willow-logs.png"
     },
 ];
