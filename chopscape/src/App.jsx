@@ -132,6 +132,7 @@ function App() {
                 inventory={inventory}
                 messages={messages}
                 woodcuttingExp={woodcuttingExp}
+                currentLevel={currentLevel}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 onDropItem={handleDropItem}
