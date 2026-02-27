@@ -1,10 +1,10 @@
-const SkillsPanel = () => {
+const SkillsPanel = ({ woodcuttingExp, currentLevel }) => {
     return (
         <>
             {/* TODO: state: player experience */}
             {/* TODO: getLevelFromExp(currentExp) */}
-            <p>Woodcutting: 35</p>
-            <p>${skill}: ${currentlevel}</p>
+            <p>Woodcutting: {currentLevel} / {currentLevel}</p>
+            <p>Experience: {woodcuttingExp}</p>
         </>
     );
 };

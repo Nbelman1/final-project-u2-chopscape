@@ -12,7 +12,8 @@ export const LOGS = [
         timeBetweenChops: 2400, // roll successRate from chop-chance.js every chop
         respawnTimeMin: 36000, // normal tree respawn randomly between 36s and 60s
         respawnTimeMax: 60000, 
-        imagePath: "/images/tree.png"
+        imagePath: "/images/tree.png",
+        logImagePath: "/images/logs.png"
     },
     { 
         tree: "Oak tree",
@@ -24,7 +25,8 @@ export const LOGS = [
         timeBetweenChops: 2400,
         respawnTimeMin: 8400, // consistent respawn time, every 8.4s
         respawnTimeMax: 8400, 
-        imagePath: "/images/oak-tree.png"
+        imagePath: "/images/oak-tree.png",
+        logImagePath: "/images/oak-logs.png"
     },
     { 
         tree: "Willow tree",
@@ -36,6 +38,7 @@ export const LOGS = [
         timeBetweenChops: 2400,
         respawnTimeMin: 8400, // consistent respawn time, every 8.4s
         respawnTimeMax: 8400, 
-        imagePath: "/images/willow-tree.png"
+        imagePath: "/images/willow-tree.png",
+        logImagePath: "/images/willow-logs.png"
     },
 ];
