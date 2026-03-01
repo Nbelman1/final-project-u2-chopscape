@@ -1,26 +1,26 @@
-// TODO: add icons for each tab
+import InventoryPanel from "./InventoryPanel";
+import SkillsPanel from "./SkillsPanel";
+import LogoutMenu from "./LogoutMenu";
+import './InterfaceTabs.css';
+
 const TABS = [
-    {id: "combat", icon: "combat-options.png", label: "Combat options", position: "top"},
     {id: "skills", icon: "skills.png", label: "Skills", position: "top"},
     {id: "inventory", icon: "inventory.png", label: "Inventory", position: "top"},
-    {id: "equipment", icon: "worn-equipment.png", label: "Worn equipment", position: "bottom"},
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
-    {id: "locked", icon: "lock.png", label: "Locked", position: "bottom"}
 ];
 
-const InterfaceTabs = ({ activeTab, onTabClick }) => {
+const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, currentLevel }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
     const renderTab = (tab) => {
         return (
-        
         <div 
             key={tab.id}
             // if tab selected is active tab, its className = "active"
             className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
             label={tab.label}
-            onClick={() => onTabClick(tab.id)}
+            onClick={() => setActiveTab(tab.id)}
         >
             <img 
                 src={`/images/${tab.icon}`}
@@ -31,10 +31,26 @@ const InterfaceTabs = ({ activeTab, onTabClick }) => {
     };
 
     return (
-        <div className="panel-wrapper">
+        <div className={`panel-wrapper panel-wrapper-${activeTab}`}>
             <div className="tabs-row top-tabs">
                 {topTabs.map(renderTab)}
             </div>
+
+            <div className="active-panel-content">
+                {activeTab === 'inventory' && (
+                    <InventoryPanel
+                        inventory={inventory}
+                        onDropItem={onDropItem}
+                    />
+                )}
+                {activeTab === 'skills' && 
+                    <SkillsPanel 
+                        woodcuttingExp={woodcuttingExp}
+                        currentLevel={currentLevel}
+                    />}
+                {activeTab === 'logout' && <LogoutMenu />}
+            </div>
+
             <div className="tabs-row bottom-tabs">
                 {bottomTabs.map(renderTab)}
             </div>
