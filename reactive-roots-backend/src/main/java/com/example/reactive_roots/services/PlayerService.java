@@ -35,6 +35,6 @@ public class PlayerService {
             return dto;
         }).toList();
 
-        return new PlayerSessionDTO(userId, stats.getExpWoodcutting(), itemDTOs);
+        return new PlayerSessionDTO(userId, stats.getExpWoodcutting(), stats.getLevelWoodcutting(), itemDTOs);
     }
 }
