@@ -1,29 +1,21 @@
 package com.example.reactive_roots.dto;
 
+import com.example.reactive_roots.models.InventoryItem;
+
 import java.util.List;
 
-public class PlayerSessionDTO {
-    private int userId;
+public class PlayerUpdateDTO {
     private int expWoodcutting;
     private int levelWoodcutting;
-    private List<InventoryItemDTO> inventory;
+    private List<InventoryItem> inventory;
 
-    public PlayerSessionDTO() {
+    public PlayerUpdateDTO() {
     }
 
-    public PlayerSessionDTO(int userId, int expWoodcutting, int levelWoodcutting, List<InventoryItemDTO> inventory) {
-        this.userId = userId;
+    public PlayerUpdateDTO(int expWoodcutting, int levelWoodcutting, List<InventoryItem> inventory) {
         this.expWoodcutting = expWoodcutting;
         this.levelWoodcutting = levelWoodcutting;
         this.inventory = inventory;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public int getExpWoodcutting() {
@@ -42,11 +34,11 @@ public class PlayerSessionDTO {
         this.levelWoodcutting = levelWoodcutting;
     }
 
-    public List<InventoryItemDTO> getInventory() {
+    public List<InventoryItem> getInventory() {
         return inventory;
     }
 
-    public void setInventory(List<InventoryItemDTO> inventory) {
+    public void setInventory(List<InventoryItem> inventory) {
         this.inventory = inventory;
     }
 }
