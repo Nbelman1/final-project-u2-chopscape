@@ -33,11 +33,11 @@ public class PlayerStat {
         this.levelWoodcutting = levelWoodcutting;
     }
 
-    public Integer getid() {
+    public Integer getId() {
         return id;
     }
 
-    public void setid(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class PlayerStat {
     }
 
     public void setUser(User user) {
-        this.user = this.user;
+        this.user = user;
     }
 
     public int getExpWoodcutting() {

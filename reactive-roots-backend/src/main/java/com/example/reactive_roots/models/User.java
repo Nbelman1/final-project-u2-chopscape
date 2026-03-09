@@ -25,6 +25,9 @@ public class User {
     @JsonManagedReference
     private List<InventoryItem> inventoryItems;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PlayerStat playerStat;
+
     public User() {
     }
 

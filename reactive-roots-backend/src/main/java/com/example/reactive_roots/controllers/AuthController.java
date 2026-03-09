@@ -1,6 +1,7 @@
 package com.example.reactive_roots.controllers;
 
 import com.example.reactive_roots.dto.LoginRequestDTO;
+import com.example.reactive_roots.dto.PlayerSessionDTO;
 import com.example.reactive_roots.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +34,15 @@ public class AuthController {
 
     // verify authentication and log in
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequest) {
-        Authentication authRequest = UsernamePasswordAuthenticationToken
-                .unauthenticated(loginRequest.username(), loginRequest.password()); // 401
+    public ResponseEntity<PlayerSessionDTO> login(@RequestBody LoginRequestDTO dto) {
+        // authenticate
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(dto.username(), dto.password())
+        );
 
-        Authentication authResult = authenticationManager.authenticate(authRequest);
+        // fetch session data
+        PlayerSessionDTO session = userService.getPlayerSession(dto.username());
 
-        return ResponseEntity.ok("Login successful!");
+        return ResponseEntity.ok(session);
     }
 }

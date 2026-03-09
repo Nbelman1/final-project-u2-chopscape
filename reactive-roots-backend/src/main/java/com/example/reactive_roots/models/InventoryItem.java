@@ -33,11 +33,11 @@ public class InventoryItem {
         this.slotPosition = slotPosition;
     }
 
-    public Integer getid() {
-        return id;
+    public Integer getId() {
+        return this.id;
     }
 
-    public void setid(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -58,7 +58,7 @@ public class InventoryItem {
     }
 
     public Integer getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
     public void setQuantity(Integer quantity) {

@@ -24,7 +24,8 @@ public class PlayerService {
 
     // map through inventory items belonging to user with userId, return List with itemName, quantity, slotPosition
     public PlayerSessionDTO getSessionData(int userId) {
-        PlayerStat stats = playerStatRepository.findByUser(userId);
+        PlayerStat stats = playerStatRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         List<InventoryItem> items = inventoryItemRepository.findByUserId(userId);
 
         List<InventoryItemDTO> itemDTOs = items.stream().map(item -> {
