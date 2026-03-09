@@ -1,7 +1,9 @@
 package com.example.reactive_roots.controllers;
 
+import com.example.reactive_roots.dto.UserProfileDTO;
 import com.example.reactive_roots.models.PlayerStat;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
+import com.example.reactive_roots.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +14,20 @@ import java.util.List;
 @RequestMapping("/api/stats")
 public class PlayerStatController {
 
-    PlayerStatRepository repository;
+    private final PlayerStatRepository repository;
+    private final PlayerService playerService;
 
-    public PlayerStatController (PlayerStatRepository repository) {
+    public PlayerStatController (PlayerStatRepository repository, PlayerService playerService) {
         this.repository = repository;
+        this.playerService = playerService;
+    }
+
+    // get woodcutting stats
+    @GetMapping("/{username}/stats")
+    public ResponseEntity<UserProfileDTO> getWoodcuttingStats(@PathVariable String username) {
+        UserProfileDTO stats = playerService.getPlayerProfile(username);
+
+        return ResponseEntity.ok(stats);
     }
 
     // fetch stats for all players

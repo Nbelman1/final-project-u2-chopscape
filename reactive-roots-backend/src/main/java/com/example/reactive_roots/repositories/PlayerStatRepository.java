@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface PlayerStatRepository extends JpaRepository<PlayerStat, Integer> {
     Optional<PlayerStat> findByUserId(int id); // handle missing value if player does not have stats yet
+    Optional<PlayerStat> findByUserUsername(String username);
 }
