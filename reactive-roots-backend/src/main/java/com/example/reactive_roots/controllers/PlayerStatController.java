@@ -1,5 +1,6 @@
 package com.example.reactive_roots.controllers;
 
+import com.example.reactive_roots.dto.PlayerSessionDTO;
 import com.example.reactive_roots.dto.UserProfileDTO;
 import com.example.reactive_roots.models.PlayerStat;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
@@ -22,9 +23,19 @@ public class PlayerStatController {
         this.playerService = playerService;
     }
 
-    // get woodcutting stats
+    // update stats and inventory (auto-save and save on logout)
+    @PutMapping("/{userId}/sync")
+    public ResponseEntity<String> syncPlayerState(
+            @PathVariable int userId,
+            @RequestBody PlayerSessionDTO sessionData
+            ) {
+        playerService.savePlayerProgress(userId, sessionData);
+        return ResponseEntity.ok("Progress synced successfully for user " + userId);
+    }
+
+    // get profile stats for settings screen
     @GetMapping("/{username}/stats")
-    public ResponseEntity<UserProfileDTO> getWoodcuttingStats(@PathVariable String username) {
+    public ResponseEntity<UserProfileDTO> getPlayerStats(@PathVariable String username) {
         UserProfileDTO stats = playerService.getPlayerProfile(username);
 
         return ResponseEntity.ok(stats);
@@ -48,18 +59,6 @@ public class PlayerStatController {
     @PostMapping
     public PlayerStat create(@RequestBody PlayerStat newStat) {
         return repository.save(newStat);
-    }
-
-    // update stats for a player (auto-save and logout)
-    @PutMapping("/{id}")
-    public ResponseEntity<PlayerStat> updateStatsByPlayer(@PathVariable int id, @RequestBody PlayerStat updatedStat) {
-        return repository.findById(id)
-                .map(existingStat -> {
-                    existingStat.setExpWoodcutting(updatedStat.getExpWoodcutting());
-                    existingStat.setLevelWoodcutting((updatedStat.getLevelWoodcutting()));
-                    return ResponseEntity.ok(repository.save(existingStat));
-                })
-                .orElse(ResponseEntity.notFound().build()); // 404
     }
 
     // delete player's stats (account deletion)

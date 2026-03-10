@@ -38,6 +38,8 @@ public class SecurityConfig {
                                 "/api/users/profile/**",
                                 "/api/users/**",
                                 "/api/stats/**",
+                                "/api/levels",
+                                "/api/inventory/**",
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated()

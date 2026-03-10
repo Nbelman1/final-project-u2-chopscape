@@ -5,9 +5,11 @@ import com.example.reactive_roots.dto.PlayerSessionDTO;
 import com.example.reactive_roots.dto.UserProfileDTO;
 import com.example.reactive_roots.models.InventoryItem;
 import com.example.reactive_roots.models.PlayerStat;
+import com.example.reactive_roots.models.User;
 import com.example.reactive_roots.repositories.InventoryItemRepository;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
 import com.example.reactive_roots.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,34 @@ public class PlayerService {
         this.playerStatRepository = playerStatRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.userRepository = userRepository;
+    }
+
+    // save session data (on auto-save and logout)
+    @Transactional // both methods run simultaneously
+    public void savePlayerProgress(int userId, PlayerSessionDTO data) {
+        // update stats
+        PlayerStat stats = playerStatRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Stats not found"));
+
+        stats.setExpWoodcutting(data.getExpWoodcutting());
+        stats.setLevelWoodcutting(data.getLevelWoodcutting());
+        playerStatRepository.save(stats);
+
+        // clear inventory, save new inventory
+        inventoryItemRepository.deleteByUser_Id(userId);
+
+        User user = userRepository.findById(userId).get();
+
+        List<InventoryItem> newItems = data.getInventory().stream().map(dto -> {
+            InventoryItem item = new InventoryItem();
+            item.setItemName(dto.getItemName());
+            item.setQuantity(dto.getQuantity());
+            item.setSlotPosition(dto.getSlotPosition());
+            item.setUser(user);
+            return item;
+        }).toList();
+
+        inventoryItemRepository.saveAll(newItems);
     }
 
     public UserProfileDTO getPlayerProfile(String username) {

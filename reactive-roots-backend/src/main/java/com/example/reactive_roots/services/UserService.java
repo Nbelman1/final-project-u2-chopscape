@@ -95,28 +95,4 @@ public class UserService {
         playerStatRepository.save(initialStats);
     }
 
-    @Transactional // these methods must execute at the same time
-    public void saveSession(int userId, PlayerSessionDTO dto) {
-        // fetch User object
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // clear old inventory
-        inventoryItemRepository.deleteByUser(user);
-
-        // update player stats
-        PlayerStat stats = playerStatRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Stats not found for user: " + user.getId()));
-        stats.setExpWoodcutting(dto.getExpWoodcutting());
-        playerStatRepository.save(stats);
-
-        // update inventoryItems on logout
-        for (InventoryItemDTO itemDto : dto.getInventory()) {
-            InventoryItem itemEntity = new InventoryItem();
-            itemEntity.setUser(user);
-            itemEntity.setItemName(itemDto.getItemName());
-            itemEntity.setQuantity(itemDto.getQuantity());
-            inventoryItemRepository.save(itemEntity);
-        }
-    }
 }
