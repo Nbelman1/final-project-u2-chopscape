@@ -1,20 +1,19 @@
 package com.example.reactive_roots.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class UserProfileDTO {
     private String username;
-    private String password;
     private int expWoodcutting;
     private int levelWoodcutting;
-    private Date dateCreated;
+    private LocalDate dateCreated;
 
     public UserProfileDTO() {
     }
 
-    public UserProfileDTO(String username, String password, int expWoodcutting, int levelWoodcutting, Date dateCreated) {
+    public UserProfileDTO(String username, int expWoodcutting, int levelWoodcutting, LocalDate dateCreated) {
         this.username = username;
-        this.password = password;
         this.expWoodcutting = expWoodcutting;
         this.levelWoodcutting = levelWoodcutting;
         this.dateCreated = dateCreated;
@@ -26,14 +25,6 @@ public class UserProfileDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public int getExpWoodcutting() {
@@ -52,11 +43,11 @@ public class UserProfileDTO {
         this.levelWoodcutting = levelWoodcutting;
     }
 
-    public Date getDateCreated() {
+    public LocalDate getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
     }
 }

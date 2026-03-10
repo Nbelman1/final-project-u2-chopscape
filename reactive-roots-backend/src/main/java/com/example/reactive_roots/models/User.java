@@ -21,9 +21,12 @@ public class User {
 
     private LocalDate dateCreated;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<InventoryItem> inventoryItems;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PlayerStat playerStat;
 
     public User() {
     }
@@ -35,11 +38,11 @@ public class User {
         this.dateCreated = dateCreated;
     }
 
-    public Integer getUser_id() {
+    public Integer getId() {
         return id;
     }
 
-    public void setUser_id(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -59,11 +62,11 @@ public class User {
         this.password = password;
     }
 
-    public LocalDate getDate_created() {
+    public LocalDate getDateCreated() {
         return dateCreated;
     }
 
-    public void setDate_created(LocalDate dateCreated) {
+    public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
     }
 

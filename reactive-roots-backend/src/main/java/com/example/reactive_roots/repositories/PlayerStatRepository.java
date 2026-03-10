@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PlayerStatRepository extends JpaRepository<PlayerStat, Integer> {
-    PlayerStat findByUser(int id);
-    Optional<PlayerStat> findByUserId(int id);
+    Optional<PlayerStat> findByUserId(int id); // handle missing value if player does not have stats yet
+    Optional<PlayerStat> findByUserUsername(String username);
 }

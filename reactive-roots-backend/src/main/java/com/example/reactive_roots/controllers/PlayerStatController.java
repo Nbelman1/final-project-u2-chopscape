@@ -1,7 +1,10 @@
 package com.example.reactive_roots.controllers;
 
+import com.example.reactive_roots.dto.PlayerSessionDTO;
+import com.example.reactive_roots.dto.UserProfileDTO;
 import com.example.reactive_roots.models.PlayerStat;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
+import com.example.reactive_roots.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +15,30 @@ import java.util.List;
 @RequestMapping("/api/stats")
 public class PlayerStatController {
 
-    PlayerStatRepository repository;
+    private final PlayerStatRepository repository;
+    private final PlayerService playerService;
 
-    public PlayerStatController (PlayerStatRepository repository) {
+    public PlayerStatController (PlayerStatRepository repository, PlayerService playerService) {
         this.repository = repository;
+        this.playerService = playerService;
+    }
+
+    // update stats and inventory (auto-save and save on logout)
+    @PutMapping("/{userId}/sync")
+    public ResponseEntity<String> syncPlayerState(
+            @PathVariable int userId,
+            @RequestBody PlayerSessionDTO sessionData
+            ) {
+        playerService.savePlayerProgress(userId, sessionData);
+        return ResponseEntity.ok("Progress synced successfully for user " + userId);
+    }
+
+    // get profile stats for settings screen
+    @GetMapping("/{username}/stats")
+    public ResponseEntity<UserProfileDTO> getPlayerStats(@PathVariable String username) {
+        UserProfileDTO stats = playerService.getPlayerProfile(username);
+
+        return ResponseEntity.ok(stats);
     }
 
     // fetch stats for all players
@@ -36,18 +59,6 @@ public class PlayerStatController {
     @PostMapping
     public PlayerStat create(@RequestBody PlayerStat newStat) {
         return repository.save(newStat);
-    }
-
-    // update stats for a player (auto-save and logout)
-    @PutMapping("/{id}")
-    public ResponseEntity<PlayerStat> updateStatsByPlayer(@PathVariable int id, @RequestBody PlayerStat updatedStat) {
-        return repository.findById(id)
-                .map(existingStat -> {
-                    existingStat.setExpWoodcutting(updatedStat.getExpWoodcutting());
-                    existingStat.setLevelWoodcutting((updatedStat.getLevelWoodcutting()));
-                    return ResponseEntity.ok(repository.save(existingStat));
-                })
-                .orElse(ResponseEntity.notFound().build()); // 404
     }
 
     // delete player's stats (account deletion)

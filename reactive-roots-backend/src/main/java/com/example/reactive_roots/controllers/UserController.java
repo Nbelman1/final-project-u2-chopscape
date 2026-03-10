@@ -1,10 +1,12 @@
 package com.example.reactive_roots.controllers;
 
+import com.example.reactive_roots.dto.UserProfileDTO;
 import com.example.reactive_roots.models.InventoryItem;
 import com.example.reactive_roots.models.PlayerStat;
 import com.example.reactive_roots.models.User;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
 import com.example.reactive_roots.repositories.UserRepository;
+import com.example.reactive_roots.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import java.util.List;
 public class UserController {
 
     UserRepository repository;
+    UserService userService;
 
-    public UserController (UserRepository repository) {
+    public UserController (UserRepository repository, UserService userService) {
         this.repository = repository;
+        this.userService = userService;
     }
 
     // fetch list of all users
@@ -34,6 +38,13 @@ public class UserController {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build()); // 404
+    }
+
+    // get user profile, for settings screen
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable String username) {
+        UserProfileDTO profile = userService.getUserProfile(username);
+        return ResponseEntity.ok(profile);
     }
 
     // add new user

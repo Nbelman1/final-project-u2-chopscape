@@ -12,5 +12,6 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, In
     List<InventoryItem> findByUserId(int userId);
     @Modifying
     @Transactional
-    List<InventoryItem> deleteByUser(User user);
+    List<InventoryItem> deleteByUser_Id(int userId);
+    List<InventoryItem> findAllByUserId(Integer userId);
 }

@@ -46,5 +46,4 @@ public class LevelRequirement {
         this.expRequired = expRequired;
     }
 
-//    TODO: fix bug on app startup -> finish testing controllers in postman
 }
