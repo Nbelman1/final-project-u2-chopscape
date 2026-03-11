@@ -19,16 +19,35 @@ import Settings from './components/MainPage/Settings';
 function App() {
 
   const [inventory, setInventory] = useState(Array(28).fill(null));
-  const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
+  const [woodcuttingExp, setWoodcuttingExp] = useState(0);
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
   const [activeTab, setActiveTab] = useState("skills");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [expTable, setExpTable] = useState([]);
   
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
 
-  const currentLevel = determineLevel(woodcuttingExp);
+  // default to level 1 while waiting for promise 
+  const currentLevel = expTable.length > 0 
+    ? determineLevel(woodcuttingExp, expTable)
+    : 1; 
+
+  const handleLoginSuccess = async (sessionData) => {
+    try {
+      localStorage.setItem('userSession', JSON.stringify(sessionData));
+
+      const response = await fetch('http://localhost:8080/api/levels');
+      const levelData = await response.json();
+
+      setExpTable(levelData);
+      setWoodcuttingExp(sessionData.woodcuttingExp);
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.log("failed to load game data:", error);
+    }
+  };
 
   function handleAddMessage(msg) {
     setMessages(prev => [...prev, msg]);
@@ -65,8 +84,8 @@ function App() {
     expRef.current = newExp;
     setWoodcuttingExp(newExp);
 
-    const preLevel = determineLevel(prevExp);
-    const postLevel = determineLevel(newExp);
+    const preLevel = determineLevel(prevExp, expTable);
+    const postLevel = determineLevel(newExp, expTable);
 
     if (postLevel > preLevel) {
       handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
@@ -114,6 +133,7 @@ function App() {
           <Route path='/login' element={<Login 
             isLoggedIn={isLoggedIn}
             setIsLoggedIn={setIsLoggedIn}
+            onLoginSuccess={handleLoginSuccess}
           />} />
           <Route path='/settings' element={<Settings />} />
         </Route>
@@ -143,7 +163,8 @@ function App() {
             </div>
 
             <div className='area-interface'>
-              <InterfaceTabs 
+              <InterfaceTabs
+                expTable={expTable}
                 inventory={inventory}
                 messages={messages}
                 woodcuttingExp={woodcuttingExp}

@@ -9,7 +9,7 @@ const TABS = [
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
 ];
 
-const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, currentLevel }) => {
+const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, expTable }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
@@ -46,7 +46,7 @@ const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcut
                 {activeTab === 'skills' && 
                     <SkillsPanel 
                         woodcuttingExp={woodcuttingExp}
-                        currentLevel={currentLevel}
+                        expTable={expTable}
                     />}
                 {activeTab === 'logout' && <LogoutMenu />}
             </div>

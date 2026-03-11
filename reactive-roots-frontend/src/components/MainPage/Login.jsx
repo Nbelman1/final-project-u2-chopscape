@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Login = ({ isLoggedIn, setIsLoggedIn }) => {
+const Login = ({ isLoggedIn, setIsLoggedIn, onLoginSuccess }) => {
 
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
+    
     // clear fields 
     useEffect(() => {
         setUsername("");
@@ -26,19 +27,13 @@ const Login = ({ isLoggedIn, setIsLoggedIn }) => {
                     password: password
                 }),
             });
-
-            const sessionData = await response.json();
-
+            
             if (response.ok) {
-                console.log('Login successful for:', sessionData.username);
+                const sessionData = await response.json();
 
-                localStorage.setItem('userSession', JSON.stringify(sessionData));
-                
-                setIsLoggedIn(true);
-                console.log("Is logged in?", isLoggedIn);
+                onLoginSuccess(sessionData);
 
-                // redirect to game
-                window.location.href = '/game';
+                navigate("/game");
 
             } else {
                 // TODO: add error message to page

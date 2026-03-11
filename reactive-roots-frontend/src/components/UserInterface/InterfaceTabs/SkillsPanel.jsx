@@ -1,10 +1,13 @@
-const SkillsPanel = ({ woodcuttingExp, currentLevel }) => {
+import { determineLevel } from '../../GameInterface/utils/woodcuttingUtils';
+
+const SkillsPanel = ({ woodcuttingExp, expTable }) => {
+    const currentLevel = determineLevel(woodcuttingExp, expTable);
+
     return (
         <>
-            {/* TODO: state: player experience */}
-            {/* TODO: getLevelFromExp(currentExp) */}
             <p>Woodcutting: {currentLevel} / {currentLevel}</p>
-            <p>Experience: {woodcuttingExp}</p>
+            {/* optional chaining prevents crash, toLocaleString adds commas to exp */}
+            <p>Experience: {woodcuttingExp?.toLocaleString() || 0}</p>
         </>
     );
 };
