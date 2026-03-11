@@ -25,8 +25,10 @@ const CreateAccount = () => {
 
             if (response.ok) {
                 const data = await response.json();
+                // TODO: add success message to page 
                 console.log("Account created successfully:", data);
             } else {
+                // TODO: add error message to page 
                 console.log("Registration failed with status:", response.status);
             }
         } catch (error) {
@@ -66,7 +68,6 @@ const CreateAccount = () => {
                 <button type='submit'>Create Account</button>
             </form>
 
-            
         </>
     );
 };

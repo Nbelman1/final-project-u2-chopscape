@@ -105,10 +105,16 @@ function App() {
       <Routes>
 
         {/* Pages with header and footer */}
-        <Route element={<MainLayout isLoggedIn={isLoggedIn}/>}>
+        <Route element={<MainLayout 
+          isLoggedIn={isLoggedIn} 
+          setIsLoggedIn={setIsLoggedIn} 
+        />} >
           <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
           <Route path='/create-account' element={<CreateAccount />} />
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<Login 
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={setIsLoggedIn}
+          />} />
           <Route path='/settings' element={<Settings />} />
         </Route>
         
