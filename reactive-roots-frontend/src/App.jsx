@@ -23,7 +23,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
   const [activeTab, setActiveTab] = useState("skills");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
