@@ -12,6 +12,7 @@ import MessageLog from './components/UserInterface/InterfaceTabs/MessageLog';
 import MainLayout from './components/MainPage/MainLayout';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
+import Settings from './components/MainPage/Settings';
 
 // TODO: erase all console.logs
 
@@ -22,6 +23,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
   const [activeTab, setActiveTab] = useState("skills");
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
@@ -103,10 +105,11 @@ function App() {
       <Routes>
 
         {/* Pages with header and footer */}
-        <Route element={<MainLayout />}>
-          <Route path='/' element={<Home />} />
+        <Route element={<MainLayout isLoggedIn={isLoggedIn}/>}>
+          <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
           <Route path='/create-account' element={<CreateAccount />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/settings' element={<Settings />} />
         </Route>
         
 

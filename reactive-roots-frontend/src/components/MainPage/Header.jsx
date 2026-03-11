@@ -1,7 +1,13 @@
-const Header = () => {
+import { Link } from "react-router-dom";
+import NavBar from "./NavBar";
+
+const Header = ({ isLoggedIn }) => {
     return (
         <>
-            <h1>ChopScape</h1>
+            <header>
+                <h1>Reactive Roots</h1>
+                <NavBar isLoggedIn={isLoggedIn}/>
+            </header>
         </>
     );
 };
