@@ -13,7 +13,7 @@ const Login = ({ isLoggedIn, setIsLoggedIn, onLoginSuccess }) => {
         setPassword("");
     }, []); // run on component mount 
 
-    const handleLogin = async (event) => {
+    async function handleLogin(event) {
         event.preventDefault();
 
         try {

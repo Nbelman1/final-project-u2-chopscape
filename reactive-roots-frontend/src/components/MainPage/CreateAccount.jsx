@@ -6,7 +6,7 @@ const CreateAccount = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleCreateAccount = async (event) => {
+    async function handleCreateAccount(event) {
         event.preventDefault();
 
         const userData = {

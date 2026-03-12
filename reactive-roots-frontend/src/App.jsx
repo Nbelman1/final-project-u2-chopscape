@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
@@ -16,8 +16,54 @@ import Settings from './components/MainPage/Settings';
 
 // TODO: erase all console.logs
 
+function useAutoSave(userId, statsData) {
+  const dataRef = useRef(statsData);
+  dataRef.current = statsData;
+
+  const save = async () => {
+    if (!userId) return;
+    try {
+      await syncUserStats(userId, dataRef.current);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(save, 60000); // 60 seconds
+    return () => clearInterval(interval);
+  }, [userId]);
+  
+  return { forceSave: save };
+}
+
+
+// TODO: set userId in Login component on log in, figure out how to send itemnames in inventory
+async function syncUserStats(userId, statsData) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
+      method: 'PUT', 
+      headers: {
+        'content-type': 'application/json', 
+      },
+      body: JSON.stringify(statsData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error, status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
 function App() {
 
+  const navigate = useNavigate();
+
+  // states
   const [inventory, setInventory] = useState(Array(28).fill(null));
   const [woodcuttingExp, setWoodcuttingExp] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -25,7 +71,9 @@ function App() {
   const [activeTab, setActiveTab] = useState("skills");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [expTable, setExpTable] = useState([]);
-  
+  const [stats, setStats] = useState( {userId: 1, expWoodcutting: 0, inventory: []});
+
+  // refs
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
 
@@ -34,7 +82,17 @@ function App() {
     ? determineLevel(woodcuttingExp, expTable)
     : 1; 
 
-  const handleLoginSuccess = async (sessionData) => {
+  // manage auto-save timer
+  const { forceSave } = useAutoSave(stats.userId, stats);
+
+
+  async function handleLogout() {
+    await forceSave();
+    navigate('/'); // home page 
+  }
+
+
+  async function handleLoginSuccess(sessionData) {
     try {
       localStorage.setItem('userSession', JSON.stringify(sessionData));
 
@@ -68,7 +126,6 @@ function App() {
     });
   }
 
-  // TODO: fix handleDropItem (onDropItem is not a function at onClick)
   function handleDropItem(index) {
     setInventory(prev => {
       const newInventory = [...prev];
