@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
@@ -15,6 +15,8 @@ import { LOGS } from './data/logs';
 import Settings from './components/MainPage/Settings';
 
 // TODO: erase all console.logs
+
+// TODO: re-route login button to go to home screen, let user click "play"
 
 function useAutoSave(userId, statsData) {
   const dataRef = useRef(statsData);
@@ -40,6 +42,9 @@ function useAutoSave(userId, statsData) {
 
 // TODO: set userId in Login component on log in, figure out how to send itemnames in inventory
 async function syncUserStats(userId, statsData) {
+
+  console.log("Sending to Backend:", JSON.stringify(statsData, null, 2));
+
   try {
     const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
       method: 'PUT', 
@@ -61,6 +66,7 @@ async function syncUserStats(userId, statsData) {
 
 function App() {
 
+  //hooks
   const navigate = useNavigate();
 
   // states
@@ -72,6 +78,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [expTable, setExpTable] = useState([]);
   const [stats, setStats] = useState( {userId: 1, expWoodcutting: 0, inventory: []});
+  const [userId, setUserId] = useState(null);
 
   // refs
   const expRef = useRef(woodcuttingExp);
@@ -177,66 +184,64 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
 
-        {/* Pages with header and footer */}
-        <Route element={<MainLayout 
-          isLoggedIn={isLoggedIn} 
-          setIsLoggedIn={setIsLoggedIn} 
-        />} >
-          <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
-          <Route path='/create-account' element={<CreateAccount />} />
-          <Route path='/login' element={<Login 
-            isLoggedIn={isLoggedIn}
-            setIsLoggedIn={setIsLoggedIn}
-            onLoginSuccess={handleLoginSuccess}
-          />} />
-          <Route path='/settings' element={<Settings />} />
-        </Route>
-        
+      {/* Pages with header and footer */}
+      <Route element={<MainLayout 
+        isLoggedIn={isLoggedIn} 
+        setIsLoggedIn={setIsLoggedIn} 
+      />} >
+        <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
+        <Route path='/create-account' element={<CreateAccount />} />
+        <Route path='/login' element={<Login 
+          userId={userId}
+          setUserId={setUserId}
+          onLoginSuccess={handleLoginSuccess}
+        />} />
+        <Route path='/settings' element={<Settings />} />
+      </Route>
+      
 
-        {/* No header and footer */}
-        <Route path='/game' element={
-          <div className='game-layout'>
-            <div className='area-gameworld'>
-              <GameInterface 
-                inventory={inventory} 
-                messages={messages}
-                currentLevel={currentLevel}
-                isChopping={isChopping}
-                expRef={expRef} 
-                isChoppingRef={isChoppingRef}
-                onStartGlobalChop={handleStartGlobalChop}
-                onStopGlobalChop={handleStopGlobalChop}
-                onGainExp={handleGainExp}
-                onAddToInventory={handleAddToInventory}
-                onAddMessage={handleAddMessage}
-              />
-            </div>
-
-            <div className='area-messages'>
-              <MessageLog messages={messages} />
-            </div>
-
-            <div className='area-interface'>
-              <InterfaceTabs
-                expTable={expTable}
-                inventory={inventory}
-                messages={messages}
-                woodcuttingExp={woodcuttingExp}
-                currentLevel={currentLevel}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                onDropItem={handleDropItem}
-              />
-            </div>
+      {/* No header and footer */}
+      <Route path='/game' element={
+        <div className='game-layout'>
+          <div className='area-gameworld'>
+            <GameInterface 
+              inventory={inventory} 
+              messages={messages}
+              currentLevel={currentLevel}
+              isChopping={isChopping}
+              expRef={expRef} 
+              isChoppingRef={isChoppingRef}
+              onStartGlobalChop={handleStartGlobalChop}
+              onStopGlobalChop={handleStopGlobalChop}
+              onGainExp={handleGainExp}
+              onAddToInventory={handleAddToInventory}
+              onAddMessage={handleAddMessage}
+            />
           </div>
-        }>
-        </Route>
-        
-      </Routes>
-    </BrowserRouter>
+
+          <div className='area-messages'>
+            <MessageLog messages={messages} />
+          </div>
+
+          <div className='area-interface'>
+            <InterfaceTabs
+              expTable={expTable}
+              inventory={inventory}
+              messages={messages}
+              woodcuttingExp={woodcuttingExp}
+              currentLevel={currentLevel}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onDropItem={handleDropItem}
+            />
+          </div>
+        </div>
+      }>
+      </Route>
+      
+    </Routes>
   )
 }
 

@@ -1,5 +1,3 @@
-import { EXP_TABLE } from "../../../data/levels";
-
 // returns player's woodcutting level 
 export function determineLevel(exp, table) {
     // guard clause

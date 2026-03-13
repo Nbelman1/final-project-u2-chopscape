@@ -92,7 +92,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
 
     // check if chop is successful
     function rollForSuccess(currentLevel, treeData, sessionId) {
-        console.log("chop tick for ", treeData.tree, " - global status: ", isChoppingRef.current);
 
         if (!isChoppingRef.current || sessionId !== activeSessionId.current) {
             console.log(`killing ghost loop for session ${sessionId}`);
@@ -119,7 +118,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
             }
             // check if tree should fall
             if (timeElapsedRef.current >= treeData.lifeTime) {
-                console.log("checking ", treeData.tree, ": timer is ", timeElapsedRef.current, " / need ", treeData.lifeTime);
                 fellTree(treeData);
             }
             const levelWasGained = onGainExp(treeData.expGained);

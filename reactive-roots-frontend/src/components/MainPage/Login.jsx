@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ isLoggedIn, setIsLoggedIn, onLoginSuccess }) => {
+const Login = ({ userId, setUserId, onLoginSuccess }) => {
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -30,7 +30,9 @@ const Login = ({ isLoggedIn, setIsLoggedIn, onLoginSuccess }) => {
             
             if (response.ok) {
                 const sessionData = await response.json();
-
+                
+                setUserId(sessionData.userId); // capture userId value from response body
+                console.log("Logged in User ID:", sessionData.userId);
                 onLoginSuccess(sessionData);
 
                 navigate("/game");
