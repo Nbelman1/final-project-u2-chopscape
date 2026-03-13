@@ -141,22 +141,34 @@ function App() {
     });
   }
 
+  // logic for state changes on successful log chop
   function handleGainExp(amount) {
     const prevExp = expRef.current;
     const newExp = prevExp + amount;
     
     expRef.current = newExp;
-    setWoodcuttingExp(newExp);
 
-    const preLevel = determineLevel(prevExp, expTable);
-    const postLevel = determineLevel(newExp, expTable);
+    console.log("current exp table:", expTable);
 
-    if (postLevel > preLevel) {
-      handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
-      displayNewMilestone(postLevel);
-      handleStopGlobalChop();
-      return true;
-    }
+    // update stats before sending to table 
+    setStats(prevStats => {
+      const preLevel = determineLevel(prevExp, expTable);
+      const postLevel = determineLevel(newExp, expTable);
+      
+      // handle level up logic 
+      if (postLevel > preLevel) {
+        handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
+        displayNewMilestone(postLevel);
+        handleStopGlobalChop();
+      }
+    
+      return {
+        ...prevStats,
+        expWoodcutting: newExp,
+        levelWoodcutting: postLevel
+      };
+    });
+
     return false; // nothing to see here - keep chopping
   }
 

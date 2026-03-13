@@ -7,6 +7,8 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     
+    // TODO: if user already exists, provide error message
+
     // clear fields 
     useEffect(() => {
         setUsername("");

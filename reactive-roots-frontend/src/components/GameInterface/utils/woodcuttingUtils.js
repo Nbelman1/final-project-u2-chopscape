@@ -4,6 +4,9 @@ export function determineLevel(exp, table) {
     if (!table || table.length === 0) return 1;
 
     let level = 1;
+
+    console.log(`Checking XP: ${exp} against Level ${obj.level} (Needs ${obj.expRequired})`);
+
     for (const obj of table) {
         if (exp >= obj.expRequired) {
             level = obj.level;
