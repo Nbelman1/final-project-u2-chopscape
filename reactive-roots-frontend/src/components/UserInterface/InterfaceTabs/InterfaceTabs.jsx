@@ -9,7 +9,7 @@ const TABS = [
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
 ];
 
-const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, currentLevel }) => {
+const InterfaceTabs = ({ stats, activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, expTable, onLogout }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
@@ -39,16 +39,27 @@ const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcut
             <div className="active-panel-content">
                 {activeTab === 'inventory' && (
                     <InventoryPanel
-                        inventory={inventory}
+                        stats={stats}
                         onDropItem={onDropItem}
                     />
                 )}
-                {activeTab === 'skills' && 
-                    <SkillsPanel 
-                        woodcuttingExp={woodcuttingExp}
-                        currentLevel={currentLevel}
-                    />}
-                {activeTab === 'logout' && <LogoutMenu />}
+
+                {activeTab === 'skills' && (
+                    expTable && expTable.length > 0 ? (
+                        <SkillsPanel 
+                            stats={stats}
+                            woodcuttingExp={woodcuttingExp}
+                            expTable={expTable}
+                        />
+                    ) : (
+                    <div className="loading-spinner">Loading skills...</div>
+                    )
+                )}
+
+                {activeTab === 'logout' && (
+                    <LogoutMenu onLogout={onLogout} />
+                )}
+
             </div>
 
             <div className="tabs-row bottom-tabs">

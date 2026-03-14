@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/stats")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PlayerStatController {
 
     private final PlayerStatRepository repository;

@@ -1,16 +1,21 @@
-import { EXP_TABLE } from "../../../data/levels";
-
 // returns player's woodcutting level 
-export function determineLevel(exp) {
-    let level = 1;
-    for (const obj of EXP_TABLE) {
-        if (exp >= obj.expRequired) {
-            level = obj.level;
+export function determineLevel(exp, table) {
+    // guard clause
+    if (!table || table.length === 0) return 1;
+
+    let currentLevel = 1;
+
+    for (const entry of table) {
+        const required = Number(entry.expRequired);
+        const playerExp = Number(exp);
+
+        if (playerExp >= required) {
+            currentLevel = entry.level;
         } else {
-            break;
+            break; // stop looking when we find level that player is
         }
     }
-    return level;
+    return currentLevel;
 };
 
 // checks if player has level required to chop desired tree 

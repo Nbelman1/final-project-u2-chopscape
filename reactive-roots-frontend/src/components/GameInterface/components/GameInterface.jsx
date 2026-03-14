@@ -10,7 +10,6 @@ const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, o
         <div className='forest-container'>
             <div className='tree-grid'>
                 {forest.map((treeName, index) => {
-                    console.log(`Rendering tree ${index}: ${treeName}`);
                     const treeObj = LOGS.find(el => el.tree === treeName);
 
                     

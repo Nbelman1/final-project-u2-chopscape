@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
+import './components/MainPage/MainPage.css';
 import InterfaceTabs from './components/UserInterface/InterfaceTabs/InterfaceTabs';
 import Home from './components/MainPage/Home';
 import CreateAccount from './components/MainPage/CreateAccount';
@@ -10,71 +11,273 @@ import Login from './components/MainPage/Login';
 import GameInterface from './components/GameInterface/components/GameInterface';
 import MessageLog from './components/UserInterface/InterfaceTabs/MessageLog';
 import MainLayout from './components/MainPage/MainLayout';
+import Settings from './components/MainPage/Settings';
+import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
-import Settings from './components/MainPage/Settings';
 
 // TODO: erase all console.logs
 
+// TODO: re-route login button to go to home screen, let user click "play"
+
+function useAutoSave(userId, statsData, isLoggedIn, pathname) {
+  const dataRef = useRef(statsData);
+  dataRef.current = statsData;
+
+  useEffect(() => { // only auto save if user started game session
+    if (!isLoggedIn || pathname !== '/game') {
+      return;
+    }
+
+    const save = async () => {
+      if (!isLoggedIn || !userId ) return;
+      try {
+        await syncUserStats(userId, dataRef.current);
+      } catch (error) {
+        throw error;
+      }
+    };
+
+      const interval = setInterval(save, 5000); // 5 seconds
+      return () => clearInterval(interval);
+  }, [isLoggedIn, pathname, userId]);
+
+  return {
+    forceSave: () => syncUserStats(userId, dataRef.current)
+  };
+}
+  
+
+async function syncUserStats(userId, statsData) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
+      method: 'PUT', 
+      headers: {
+        'content-type': 'application/json', 
+      },
+      body: JSON.stringify(statsData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error, status: ${response.status}`);
+    }
+
+    return await response.text();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// persistence on page refresh - fetch session data from localStorage 
+const savedSession = JSON.parse(localStorage.getItem('userSession'));
+
 function App() {
 
-  const [inventory, setInventory] = useState(Array(28).fill(null));
-  const [woodcuttingExp, setWoodcuttingExp] = useState(13360); // TODO: change back to 0
+  // states
+  const [stats, setStats] = useState(savedSession || {
+    userId: null,
+    expWoodcutting: 0,
+    levelWoodcutting: 1,
+    inventory: Array(28).fill(null) // create empty slots for fetch to fill
+  });
+  const [inventory, setInventory] = useState(savedSession?.inventory || Array(28).fill(null));
+  const [woodcuttingExp, setWoodcuttingExp] = useState(savedSession?.expWoodcutting || 0);
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
   const [activeTab, setActiveTab] = useState("skills");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!savedSession);
+  const [expTable, setExpTable] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
+  // refs
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
 
-  const currentLevel = determineLevel(woodcuttingExp);
+  // custom hooks
+  const navigate = useNavigate();
+  const { pathname } = useLocation(); // current URL path
+
+  // manage auto-save timer
+  const { forceSave } = useAutoSave(stats.userId, stats, isLoggedIn, pathname);
+
+  // default to level 1 while waiting for promise 
+  const currentLevel = expTable.length > 0 
+    ? determineLevel(woodcuttingExp, expTable)
+    : 1; 
+
+  // set stats when levelRequirements table promise is resolved 
+  useEffect(() => {
+    if (expTable.length > 0 && statusbar.expWoodcutting > 0) {
+      const correctLevel = determineLevel(stats.expWoodcutting, expTable);
+
+      setStats(prev => ({
+        ...prev,
+        levelWoodcutting: correctLevel
+      }));
+    }
+  }, [expTable]);
+
+  async function handleDeleteAccount() {
+    await fetch(`http://localhost:8080/api/users/${stats.userId}`, {
+      method: 'DELETE',
+    });
+
+    localStorage.removeItem('userSession');
+    setIsLoggedIn(false);
+    setStats({ userId: null, expWoodcutting: 0, inventory: Array(28).fill(null) });
+    expRef.current = 0;
+
+    setIsDeleteModalOpen(false);
+    navigate('/');
+  }
+
+  async function handleLogout() {
+    const currentId = stats.userId;
+    const currentData = { ...stats };
+
+    // save progress
+    if (currentId) {
+      await syncUserStats(currentId, currentData);
+      console.log("final save successful");
+    }
+
+    // clear local storage, states (for UI), and refs (for engine)
+    localStorage.removeItem('userSession');
+    setIsLoggedIn(false);
+
+    const emptyInv = Array(28).fill(null);
+
+    setStats({ 
+      userId: null,
+      expWoodcutting: 0,
+      levelWoodcutting: 1,
+      inventory: emptyInv
+    });
+    expRef.current = 0;
+    setWoodcuttingExp(0);
+    setInventory(emptyInv);
+    setActiveTab("skills");
+
+    // return to home page 
+    navigate('/');  
+  }
+
+
+  async function handleLoginSuccess(sessionData) {
+    try {
+
+      console.log("login payload:", sessionData);
+
+      // save sessionData to browser for persistence 
+      localStorage.setItem('userSession', JSON.stringify(sessionData));
+
+      const response = await fetch('http://localhost:8080/api/levels');
+      const levelTable = await response.json();
+      setExpTable(levelTable);
+
+      const freshInventory = Array(28).fill(null);
+      
+      // assign each item to correct slot
+      if (sessionData.inventory) {
+        sessionData.inventory.forEach(item => {
+          freshInventory[item.slotPosition] = item;
+        });
+      }
+      // include freshInventory in new stats state
+      const updatedStats = {
+        userId: sessionData.userId,
+        username: sessionData.username,
+        dateCreated: sessionData.dateCreated,
+        expWoodcutting: sessionData.expWoodcutting,
+        levelWoodcutting: sessionData.levelWoodcutting,
+        inventory: freshInventory
+      };
+
+      setInventory(freshInventory);
+      setStats(updatedStats); // for back end
+      setWoodcuttingExp(sessionData.expWoodcutting); // for frontend / skills panel
+      expRef.current = sessionData.expWoodcutting; // for engine
+      setIsLoggedIn(true);
+
+      console.log("updatedstats: ", updatedStats);
+
+    } catch (error) {
+      console.log("failed to load game data:", error);
+    }
+  };
 
   function handleAddMessage(msg) {
     setMessages(prev => [...prev, msg]);
   }
 
-  function handleAddToInventory(logType) {
-    setInventory(prev => {
-        const firstEmptySlot = prev.indexOf(null);
+  function handleAddToInventory(logName) {
 
-        if (firstEmptySlot !== -1) {
-            const newInventory = [...prev];
-            newInventory[firstEmptySlot] = { name: logType, id: Date.now() };
-            return newInventory;
-        } else {
-            onAddMessage("Your inventory is too full to hold any more logs.");
-            return prev;
-        }
-    });
+    const newInventory = [...stats.inventory];
+    const emptySlotIndex = newInventory.findIndex(slot => slot === null);
+
+    // guard clause
+    if (!isLoggedIn || expTable.length === 0) return;
+
+    if (emptySlotIndex === -1) {
+      handleAddMessage("Your inventory is too full to hold any more logs.");
+      handleStopGlobalChop();
+      return;
+    }
+
+    // if available inventory slot, update item object 
+      newInventory[emptySlotIndex] = {
+        itemName: logName,
+        quantity: 1,
+        slotPosition: emptySlotIndex
+      };
+    
+    // sync backend (stats state) and frontend (inventory state)
+    setStats(prevStats => ({ ...prevStats, inventory: newInventory }));
+    setInventory(newInventory);
   }
 
-  // TODO: fix handleDropItem (onDropItem is not a function at onClick)
   function handleDropItem(index) {
-    setInventory(prev => {
-      const newInventory = [...prev];
-      newInventory[index] = null; // clear this inventory slot
-      return newInventory;
-    });
+    const newInventory = [...stats.inventory];
+    newInventory[index] = null;
+    
+    // set Stats state for backend 
+    setStats(prev => ({
+        ...prev,
+        inventory: newInventory
+    }));
+
+    // set Inventory state for frontend
+    setInventory(newInventory);
+
+    console.log("item dropped at index:", index);
   }
 
+  // logic for state changes on successful log chop
   function handleGainExp(amount) {
     const prevExp = expRef.current;
     const newExp = prevExp + amount;
-    
     expRef.current = newExp;
-    setWoodcuttingExp(newExp);
 
-    const preLevel = determineLevel(prevExp);
-    const postLevel = determineLevel(newExp);
+    const preLevel = determineLevel(prevExp, expTable);
+    const postLevel = determineLevel(newExp, expTable);
 
+    // handle level up logic 
     if (postLevel > preLevel) {
       handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
       displayNewMilestone(postLevel);
       handleStopGlobalChop();
-      return true;
     }
-    return false; // nothing to see here - keep chopping
+    
+    setStats(prevStats => ({
+      ...prevStats,
+      expWoodcutting: newExp,
+      levelWoodcutting: postLevel
+    }));
+
+    setWoodcuttingExp(newExp);
+
+    return false; // keep chopping
   }
 
   function handleStartGlobalChop() {
@@ -101,15 +304,35 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <>
+
+      <ConfirmationModal 
+          isOpen={isDeleteModalOpen}
+          message="This will permanently delete your account. Are you sure?"
+          onConfirm={handleDeleteAccount}
+          onCancel={() => setIsDeleteModalOpen(false)}
+      />
+
       <Routes>
 
         {/* Pages with header and footer */}
-        <Route element={<MainLayout isLoggedIn={isLoggedIn}/>}>
+        <Route element={<MainLayout 
+          isLoggedIn={isLoggedIn} 
+          setIsLoggedIn={setIsLoggedIn} 
+        />} >
           <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
           <Route path='/create-account' element={<CreateAccount />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/settings' element={<Settings />} />
+          <Route path='/login' element={<Login 
+            userId={userId}
+            setUserId={setUserId}
+            onLoginSuccess={handleLoginSuccess}
+          />} />
+          <Route path='/settings' element={<Settings
+            onLogout={handleLogout}
+            onDeleteAccount={handleDeleteAccount}
+            setIsDeleteModalOpen={setIsDeleteModalOpen}
+            stats={stats}
+          />} />
         </Route>
         
 
@@ -137,13 +360,16 @@ function App() {
             </div>
 
             <div className='area-interface'>
-              <InterfaceTabs 
+              <InterfaceTabs
+                stats={stats}
+                expTable={expTable}
                 inventory={inventory}
                 messages={messages}
                 woodcuttingExp={woodcuttingExp}
                 currentLevel={currentLevel}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                onLogout={handleLogout}
                 onDropItem={handleDropItem}
               />
             </div>
@@ -152,7 +378,8 @@ function App() {
         </Route>
         
       </Routes>
-    </BrowserRouter>
+
+    </>
   )
 }
 
