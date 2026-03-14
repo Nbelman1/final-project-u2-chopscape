@@ -1,8 +1,4 @@
-import { determineLevel } from '../../GameInterface/utils/woodcuttingUtils';
-
 const SkillsPanel = ({ stats, woodcuttingExp, expTable }) => {
-
-    const currentLevel = determineLevel(woodcuttingExp, expTable);
 
     return (
         <>

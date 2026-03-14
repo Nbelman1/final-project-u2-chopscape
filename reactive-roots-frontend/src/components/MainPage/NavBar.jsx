@@ -1,27 +1,26 @@
 import { Link } from "react-router-dom";
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
-    return (
-        <>
-            <nav>
-                <Link to='/'>Home | </Link>
+  return (
+    <>
+      <nav>
+        <Link to='/'>Home | </Link>
 
-                {isLoggedIn ? (
-                  <>
-                    <Link to='/game'>Play | </Link>
-                    <Link to='/settings'>Settings</Link>
-                    <p>Log out</p>
-                  </>
-                ) : (
-                  <>
-                    <Link to='/login'>Login | </Link>
-                    <Link to='/create-account'>Create Account</Link>
-                  </>
-                )}
+          {isLoggedIn ? (
+            <>
+              <Link to='/game'>Play | </Link>
+              <Link to='/settings'>Settings</Link>
+            </>
+          ) : (
+            <>
+              <Link to='/login'>Log In | </Link>
+              <Link to='/create-account'>Create Account</Link>
+            </>
+          )}
 
-            </nav>
-        </>
-    );
+      </nav>
+    </>
+  );
 };
 
 export default NavBar;

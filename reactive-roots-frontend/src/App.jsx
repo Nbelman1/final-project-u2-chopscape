@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
+import './components/MainPage/MainPage.css';
 import InterfaceTabs from './components/UserInterface/InterfaceTabs/InterfaceTabs';
 import Home from './components/MainPage/Home';
 import CreateAccount from './components/MainPage/CreateAccount';
@@ -10,9 +11,10 @@ import Login from './components/MainPage/Login';
 import GameInterface from './components/GameInterface/components/GameInterface';
 import MessageLog from './components/UserInterface/InterfaceTabs/MessageLog';
 import MainLayout from './components/MainPage/MainLayout';
+import Settings from './components/MainPage/Settings';
+import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
-import Settings from './components/MainPage/Settings';
 
 // TODO: erase all console.logs
 
@@ -47,7 +49,6 @@ function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   
 
 async function syncUserStats(userId, statsData) {
-
   try {
     const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
       method: 'PUT', 
@@ -72,10 +73,6 @@ const savedSession = JSON.parse(localStorage.getItem('userSession'));
 
 function App() {
 
-  //hook declarations
-  const navigate = useNavigate();
-  const { pathname } = useLocation(); // current URL path
-
   // states
   const [stats, setStats] = useState(savedSession || {
     userId: null,
@@ -91,10 +88,15 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!savedSession);
   const [expTable, setExpTable] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   // refs
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
+
+  // custom hooks
+  const navigate = useNavigate();
+  const { pathname } = useLocation(); // current URL path
 
   // manage auto-save timer
   const { forceSave } = useAutoSave(stats.userId, stats, isLoggedIn, pathname);
@@ -116,6 +118,19 @@ function App() {
     }
   }, [expTable]);
 
+  async function handleDeleteAccount() {
+    await fetch(`http://localhost:8080/api/users/${stats.userId}`, {
+      method: 'DELETE',
+    });
+
+    localStorage.removeItem('userSession');
+    setIsLoggedIn(false);
+    setStats({ userId: null, expWoodcutting: 0, inventory: Array(28).fill(null) });
+    expRef.current = 0;
+
+    setIsDeleteModalOpen(false);
+    navigate('/');
+  }
 
   async function handleLogout() {
     const currentId = stats.userId;
@@ -151,6 +166,9 @@ function App() {
 
   async function handleLoginSuccess(sessionData) {
     try {
+
+      console.log("login payload:", sessionData);
+
       // save sessionData to browser for persistence 
       localStorage.setItem('userSession', JSON.stringify(sessionData));
 
@@ -168,14 +186,21 @@ function App() {
       }
       // include freshInventory in new stats state
       const updatedStats = {
-        ...sessionData,
+        userId: sessionData.userId,
+        username: sessionData.username,
+        dateCreated: sessionData.dateCreated,
+        expWoodcutting: sessionData.expWoodcutting,
+        levelWoodcutting: sessionData.levelWoodcutting,
         inventory: freshInventory
       };
 
       setInventory(freshInventory);
       setStats(updatedStats); // for back end
-      setWoodcuttingExp(sessionData.expWoodcutting); // for skills panel
+      setWoodcuttingExp(sessionData.expWoodcutting); // for frontend / skills panel
+      expRef.current = sessionData.expWoodcutting; // for engine
       setIsLoggedIn(true);
+
+      console.log("updatedstats: ", updatedStats);
 
     } catch (error) {
       console.log("failed to load game data:", error);
@@ -279,67 +304,82 @@ function App() {
   }
 
   return (
+    <>
 
-    <Routes>
+      <ConfirmationModal 
+          isOpen={isDeleteModalOpen}
+          message="This will permanently delete your account. Are you sure?"
+          onConfirm={handleDeleteAccount}
+          onCancel={() => setIsDeleteModalOpen(false)}
+      />
 
-      {/* Pages with header and footer */}
-      <Route element={<MainLayout 
-        isLoggedIn={isLoggedIn} 
-        setIsLoggedIn={setIsLoggedIn} 
-      />} >
-        <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
-        <Route path='/create-account' element={<CreateAccount />} />
-        <Route path='/login' element={<Login 
-          userId={userId}
-          setUserId={setUserId}
-          onLoginSuccess={handleLoginSuccess}
-        />} />
-        <Route path='/settings' element={<Settings />} />
-      </Route>
-      
+      <Routes>
 
-      {/* No header and footer */}
-      <Route path='/game' element={
-        <div className='game-layout'>
-          <div className='area-gameworld'>
-            <GameInterface 
-              inventory={inventory} 
-              messages={messages}
-              currentLevel={currentLevel}
-              isChopping={isChopping}
-              expRef={expRef} 
-              isChoppingRef={isChoppingRef}
-              onStartGlobalChop={handleStartGlobalChop}
-              onStopGlobalChop={handleStopGlobalChop}
-              onGainExp={handleGainExp}
-              onAddToInventory={handleAddToInventory}
-              onAddMessage={handleAddMessage}
-            />
+        {/* Pages with header and footer */}
+        <Route element={<MainLayout 
+          isLoggedIn={isLoggedIn} 
+          setIsLoggedIn={setIsLoggedIn} 
+        />} >
+          <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
+          <Route path='/create-account' element={<CreateAccount />} />
+          <Route path='/login' element={<Login 
+            userId={userId}
+            setUserId={setUserId}
+            onLoginSuccess={handleLoginSuccess}
+          />} />
+          <Route path='/settings' element={<Settings
+            onLogout={handleLogout}
+            onDeleteAccount={handleDeleteAccount}
+            setIsDeleteModalOpen={setIsDeleteModalOpen}
+            stats={stats}
+          />} />
+        </Route>
+        
+
+        {/* No header and footer */}
+        <Route path='/game' element={
+          <div className='game-layout'>
+            <div className='area-gameworld'>
+              <GameInterface 
+                inventory={inventory} 
+                messages={messages}
+                currentLevel={currentLevel}
+                isChopping={isChopping}
+                expRef={expRef} 
+                isChoppingRef={isChoppingRef}
+                onStartGlobalChop={handleStartGlobalChop}
+                onStopGlobalChop={handleStopGlobalChop}
+                onGainExp={handleGainExp}
+                onAddToInventory={handleAddToInventory}
+                onAddMessage={handleAddMessage}
+              />
+            </div>
+
+            <div className='area-messages'>
+              <MessageLog messages={messages} />
+            </div>
+
+            <div className='area-interface'>
+              <InterfaceTabs
+                stats={stats}
+                expTable={expTable}
+                inventory={inventory}
+                messages={messages}
+                woodcuttingExp={woodcuttingExp}
+                currentLevel={currentLevel}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onLogout={handleLogout}
+                onDropItem={handleDropItem}
+              />
+            </div>
           </div>
+        }>
+        </Route>
+        
+      </Routes>
 
-          <div className='area-messages'>
-            <MessageLog messages={messages} />
-          </div>
-
-          <div className='area-interface'>
-            <InterfaceTabs
-              stats={stats}
-              expTable={expTable}
-              inventory={inventory}
-              messages={messages}
-              woodcuttingExp={woodcuttingExp}
-              currentLevel={currentLevel}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              onLogout={handleLogout}
-              onDropItem={handleDropItem}
-            />
-          </div>
-        </div>
-      }>
-      </Route>
-      
-    </Routes>
+    </>
   )
 }
 

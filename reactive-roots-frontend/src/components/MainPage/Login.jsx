@@ -42,7 +42,7 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
                 console.log("Logged in User ID:", sessionData.userId);
                 onLoginSuccess(sessionData);
 
-                navigate("/game");
+                navigate('/');
 
             } else {
                 // TODO: add error message to page
