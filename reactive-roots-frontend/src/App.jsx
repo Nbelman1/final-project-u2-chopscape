@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
@@ -18,33 +18,35 @@ import Settings from './components/MainPage/Settings';
 
 // TODO: re-route login button to go to home screen, let user click "play"
 
-function useAutoSave(userId, statsData, isLoggedIn) {
+function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
   dataRef.current = statsData;
 
-  const save = async () => {
-    if (!isLoggedIn || !userId ) return;
-    try {
-      await syncUserStats(userId, dataRef.current);
-    } catch (error) {
-      throw error;
+  useEffect(() => { // only auto save if user started game session
+    if (!isLoggedIn || pathname !== '/game') {
+      return;
     }
+
+    const save = async () => {
+      if (!isLoggedIn || !userId ) return;
+      try {
+        await syncUserStats(userId, dataRef.current);
+      } catch (error) {
+        throw error;
+      }
+    };
+
+      const interval = setInterval(save, 5000); // 5 seconds
+      return () => clearInterval(interval);
+  }, [isLoggedIn, pathname, userId]);
+
+  return {
+    forceSave: () => syncUserStats(userId, dataRef.current)
   };
-
-  useEffect(() => { // TODO: update 5000 -> 60000
-    if (!isLoggedIn) return; 
-    const interval = setInterval(save, 5000); // 60 seconds
-    return () => clearInterval(interval);
-  }, [isLoggedIn, userId]);
-  
-  return { forceSave: save };
 }
+  
 
-
-// TODO: figure out how to send itemnames in inventory
 async function syncUserStats(userId, statsData) {
-
-  console.log("Sending to Backend:", JSON.stringify(statsData, null, 2));
 
   try {
     const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
@@ -65,39 +67,42 @@ async function syncUserStats(userId, statsData) {
   }
 }
 
+// persistence on page refresh - fetch session data from localStorage 
+const savedSession = JSON.parse(localStorage.getItem('userSession'));
+
 function App() {
 
-  //hooks
+  //hook declarations
   const navigate = useNavigate();
+  const { pathname } = useLocation(); // current URL path
 
   // states
-  const [inventory, setInventory] = useState(Array(28).fill(null));
-  const [woodcuttingExp, setWoodcuttingExp] = useState(0);
+  const [stats, setStats] = useState(savedSession || {
+    userId: null,
+    expWoodcutting: 0,
+    levelWoodcutting: 1,
+    inventory: Array(28).fill(null) // create empty slots for fetch to fill
+  });
+  const [inventory, setInventory] = useState(savedSession?.inventory || Array(28).fill(null));
+  const [woodcuttingExp, setWoodcuttingExp] = useState(savedSession?.expWoodcutting || 0);
   const [messages, setMessages] = useState([]);
   const [isChopping, setIsChopping] = useState(false);
   const [activeTab, setActiveTab] = useState("skills");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!savedSession);
   const [expTable, setExpTable] = useState([]);
-  const [stats, setStats] = useState( {userId: 1, expWoodcutting: 0, inventory: []});
   const [userId, setUserId] = useState(null);
-
+  
   // refs
   const expRef = useRef(woodcuttingExp);
   const isChoppingRef = useRef(false);
+
+  // manage auto-save timer
+  const { forceSave } = useAutoSave(stats.userId, stats, isLoggedIn, pathname);
 
   // default to level 1 while waiting for promise 
   const currentLevel = expTable.length > 0 
     ? determineLevel(woodcuttingExp, expTable)
     : 1; 
-
-  // manage auto-save timer
-  const { forceSave } = useAutoSave(stats.userId, stats, isLoggedIn);
-
-  console.log("App State Check:", { 
-  xp: stats.expWoodcutting, 
-  level: stats.levelWoodcutting, 
-  invCount: stats.inventory.filter(Boolean).length 
-});
 
   // set stats when levelRequirements table promise is resolved 
   useEffect(() => {
@@ -111,12 +116,36 @@ function App() {
     }
   }, [expTable]);
 
-  
-
 
   async function handleLogout() {
-    await forceSave();
-    navigate('/'); // home page 
+    const currentId = stats.userId;
+    const currentData = { ...stats };
+
+    // save progress
+    if (currentId) {
+      await syncUserStats(currentId, currentData);
+      console.log("final save successful");
+    }
+
+    // clear local storage, states (for UI), and refs (for engine)
+    localStorage.removeItem('userSession');
+    setIsLoggedIn(false);
+
+    const emptyInv = Array(28).fill(null);
+
+    setStats({ 
+      userId: null,
+      expWoodcutting: 0,
+      levelWoodcutting: 1,
+      inventory: emptyInv
+    });
+    expRef.current = 0;
+    setWoodcuttingExp(0);
+    setInventory(emptyInv);
+    setActiveTab("skills");
+
+    // return to home page 
+    navigate('/');  
   }
 
 
@@ -145,7 +174,7 @@ function App() {
 
       setInventory(freshInventory);
       setStats(updatedStats); // for back end
-      setWoodcuttingExp(sessionData.expWoodcutting); // for inventory panel
+      setWoodcuttingExp(sessionData.expWoodcutting); // for skills panel
       setIsLoggedIn(true);
 
     } catch (error) {
@@ -158,34 +187,45 @@ function App() {
   }
 
   function handleAddToInventory(logName) {
-    setStats(prevStats => {
-      const newInventory = [...prevStats.inventory];
 
-      // if inventory is full, log message
-      const emptySlotIndex = newInventory.findIndex(slot => slot === null);
-      if (emptySlotIndex === -1) {
-        handleAddMessage("Your inventory is too full to hold any more logs.");
-        handleStopGlobalChop();
-        return prevStats;
-      }
+    const newInventory = [...stats.inventory];
+    const emptySlotIndex = newInventory.findIndex(slot => slot === null);
 
-      // if available inventory slot, update item object 
+    // guard clause
+    if (!isLoggedIn || expTable.length === 0) return;
+
+    if (emptySlotIndex === -1) {
+      handleAddMessage("Your inventory is too full to hold any more logs.");
+      handleStopGlobalChop();
+      return;
+    }
+
+    // if available inventory slot, update item object 
       newInventory[emptySlotIndex] = {
         itemName: logName,
         quantity: 1,
         slotPosition: emptySlotIndex
       };
-
-      return { ...prevStats, inventory: newInventory };
-    });
+    
+    // sync backend (stats state) and frontend (inventory state)
+    setStats(prevStats => ({ ...prevStats, inventory: newInventory }));
+    setInventory(newInventory);
   }
 
   function handleDropItem(index) {
-    setInventory(prev => {
-      const newInventory = [...prev];
-      newInventory[index] = null; // clear this inventory slot
-      return newInventory;
-    });
+    const newInventory = [...stats.inventory];
+    newInventory[index] = null;
+    
+    // set Stats state for backend 
+    setStats(prev => ({
+        ...prev,
+        inventory: newInventory
+    }));
+
+    // set Inventory state for frontend
+    setInventory(newInventory);
+
+    console.log("item dropped at index:", index);
   }
 
   // logic for state changes on successful log chop
@@ -291,6 +331,7 @@ function App() {
               currentLevel={currentLevel}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              onLogout={handleLogout}
               onDropItem={handleDropItem}
             />
           </div>

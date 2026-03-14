@@ -9,16 +9,14 @@ const InventoryPanel = ({ stats, onDropItem }) => {
     return (
         <div className="inventory-grid">
             {inventory.map((item, index) => {
-                console.log("slot item:", item);
 
                 // if slot has an item in it, name the item
                 const logData = item && item.itemName ? 
                     LOGS.find(el => el.logType === item.itemName) 
                     : null;
 
-                console.log("stats.inventory", stats.inventory);
-
                 return (
+                    // if slot has an item, render item image 
                     <div key={index} className="inventory-slot">
                     {item && logData ? (
                         <>
@@ -31,6 +29,7 @@ const InventoryPanel = ({ stats, onDropItem }) => {
                                     onDropItem(index);
                                 }}
                         />
+                        {/* delete item on click */}
                         <button className="mobile-drop" onClick={() => onDropItem(index)}>x</button>
                         </>
                     ) : null}

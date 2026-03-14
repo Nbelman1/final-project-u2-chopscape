@@ -1,7 +1,13 @@
-const LogoutMenu = () => {
+const LogoutMenu = ({ onLogout }) => {
     return (
         <>
-            <button>Click here to logout</button>
+            <h2>Thank you for playing Reactive Roots.</h2>
+            <p>We'll see you next time!</p>
+            <button 
+                className="logout-container" 
+                onClick={onLogout}
+                >Click here to logout
+            </button>
         </>
     );
 };
