@@ -94,7 +94,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
     function rollForSuccess(currentLevel, treeData, sessionId) {
 
         if (!isChoppingRef.current || sessionId !== activeSessionId.current) {
-            console.log(`killing ghost loop for session ${sessionId}`);
             return;
         }
 
@@ -103,7 +102,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
         const levelIndex = currentLevel - 1;
         const chopData = CHOP_CHANCES[levelIndex]; // account for 0-based indexing
         if(!chopData) {
-            console.log("could not find data for level:", currentLevel);
             return;
         }
         const successRate = chopData.successRate;

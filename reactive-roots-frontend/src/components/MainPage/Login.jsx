@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { determineLevel } from '../GameInterface/utils/woodcuttingUtils';
 
 const Login = ({ userId, setUserId, onLoginSuccess }) => {
 
@@ -8,6 +9,10 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
     const [password, setPassword] = useState("");
     
     // TODO: if user already exists, provide error message
+
+    // TODO: navigate user to home page instead of /game 
+
+    // TODO: add validation for username and password 
 
     // clear fields 
     useEffect(() => {

@@ -18,12 +18,12 @@ import Settings from './components/MainPage/Settings';
 
 // TODO: re-route login button to go to home screen, let user click "play"
 
-function useAutoSave(userId, statsData) {
+function useAutoSave(userId, statsData, isLoggedIn) {
   const dataRef = useRef(statsData);
   dataRef.current = statsData;
 
   const save = async () => {
-    if (!userId) return;
+    if (!isLoggedIn || !userId ) return;
     try {
       await syncUserStats(userId, dataRef.current);
     } catch (error) {
@@ -31,16 +31,17 @@ function useAutoSave(userId, statsData) {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(save, 60000); // 60 seconds
+  useEffect(() => { // TODO: update 5000 -> 60000
+    if (!isLoggedIn) return; 
+    const interval = setInterval(save, 5000); // 60 seconds
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [isLoggedIn, userId]);
   
   return { forceSave: save };
 }
 
 
-// TODO: set userId in Login component on log in, figure out how to send itemnames in inventory
+// TODO: figure out how to send itemnames in inventory
 async function syncUserStats(userId, statsData) {
 
   console.log("Sending to Backend:", JSON.stringify(statsData, null, 2));
@@ -58,7 +59,7 @@ async function syncUserStats(userId, statsData) {
       throw new Error(`HTTP error, status: ${response.status}`);
     }
 
-    return await response.json();
+    return await response.text();
   } catch (error) {
     throw error;
   }
@@ -90,7 +91,27 @@ function App() {
     : 1; 
 
   // manage auto-save timer
-  const { forceSave } = useAutoSave(stats.userId, stats);
+  const { forceSave } = useAutoSave(stats.userId, stats, isLoggedIn);
+
+  console.log("App State Check:", { 
+  xp: stats.expWoodcutting, 
+  level: stats.levelWoodcutting, 
+  invCount: stats.inventory.filter(Boolean).length 
+});
+
+  // set stats when levelRequirements table promise is resolved 
+  useEffect(() => {
+    if (expTable.length > 0 && statusbar.expWoodcutting > 0) {
+      const correctLevel = determineLevel(stats.expWoodcutting, expTable);
+
+      setStats(prev => ({
+        ...prev,
+        levelWoodcutting: correctLevel
+      }));
+    }
+  }, [expTable]);
+
+  
 
 
   async function handleLogout() {
@@ -101,14 +122,32 @@ function App() {
 
   async function handleLoginSuccess(sessionData) {
     try {
+      // save sessionData to browser for persistence 
       localStorage.setItem('userSession', JSON.stringify(sessionData));
 
       const response = await fetch('http://localhost:8080/api/levels');
-      const levelData = await response.json();
+      const levelTable = await response.json();
+      setExpTable(levelTable);
 
-      setExpTable(levelData);
-      setWoodcuttingExp(sessionData.woodcuttingExp);
+      const freshInventory = Array(28).fill(null);
+      
+      // assign each item to correct slot
+      if (sessionData.inventory) {
+        sessionData.inventory.forEach(item => {
+          freshInventory[item.slotPosition] = item;
+        });
+      }
+      // include freshInventory in new stats state
+      const updatedStats = {
+        ...sessionData,
+        inventory: freshInventory
+      };
+
+      setInventory(freshInventory);
+      setStats(updatedStats); // for back end
+      setWoodcuttingExp(sessionData.expWoodcutting); // for inventory panel
       setIsLoggedIn(true);
+
     } catch (error) {
       console.log("failed to load game data:", error);
     }
@@ -118,18 +157,26 @@ function App() {
     setMessages(prev => [...prev, msg]);
   }
 
-  function handleAddToInventory(logType) {
-    setInventory(prev => {
-        const firstEmptySlot = prev.indexOf(null);
+  function handleAddToInventory(logName) {
+    setStats(prevStats => {
+      const newInventory = [...prevStats.inventory];
 
-        if (firstEmptySlot !== -1) {
-            const newInventory = [...prev];
-            newInventory[firstEmptySlot] = { name: logType, id: Date.now() };
-            return newInventory;
-        } else {
-            onAddMessage("Your inventory is too full to hold any more logs.");
-            return prev;
-        }
+      // if inventory is full, log message
+      const emptySlotIndex = newInventory.findIndex(slot => slot === null);
+      if (emptySlotIndex === -1) {
+        handleAddMessage("Your inventory is too full to hold any more logs.");
+        handleStopGlobalChop();
+        return prevStats;
+      }
+
+      // if available inventory slot, update item object 
+      newInventory[emptySlotIndex] = {
+        itemName: logName,
+        quantity: 1,
+        slotPosition: emptySlotIndex
+      };
+
+      return { ...prevStats, inventory: newInventory };
     });
   }
 
@@ -145,31 +192,27 @@ function App() {
   function handleGainExp(amount) {
     const prevExp = expRef.current;
     const newExp = prevExp + amount;
-    
     expRef.current = newExp;
 
-    console.log("current exp table:", expTable);
+    const preLevel = determineLevel(prevExp, expTable);
+    const postLevel = determineLevel(newExp, expTable);
 
-    // update stats before sending to table 
-    setStats(prevStats => {
-      const preLevel = determineLevel(prevExp, expTable);
-      const postLevel = determineLevel(newExp, expTable);
-      
-      // handle level up logic 
-      if (postLevel > preLevel) {
-        handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
-        displayNewMilestone(postLevel);
-        handleStopGlobalChop();
-      }
+    // handle level up logic 
+    if (postLevel > preLevel) {
+      handleAddMessage(`Congratulations! You just advanced a Woodcutting level. You are now level ${postLevel}.`);
+      displayNewMilestone(postLevel);
+      handleStopGlobalChop();
+    }
     
-      return {
-        ...prevStats,
-        expWoodcutting: newExp,
-        levelWoodcutting: postLevel
-      };
-    });
+    setStats(prevStats => ({
+      ...prevStats,
+      expWoodcutting: newExp,
+      levelWoodcutting: postLevel
+    }));
 
-    return false; // nothing to see here - keep chopping
+    setWoodcuttingExp(newExp);
+
+    return false; // keep chopping
   }
 
   function handleStartGlobalChop() {
@@ -196,6 +239,7 @@ function App() {
   }
 
   return (
+
     <Routes>
 
       {/* Pages with header and footer */}
@@ -239,6 +283,7 @@ function App() {
 
           <div className='area-interface'>
             <InterfaceTabs
+              stats={stats}
               expTable={expTable}
               inventory={inventory}
               messages={messages}
