@@ -22,6 +22,8 @@ import { LOGS } from './data/logs';
 
 // TODO: Intellij -> clear up endpoints not in use
 
+// TODO: add exp remaining to next level
+
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
   dataRef.current = statsData;
