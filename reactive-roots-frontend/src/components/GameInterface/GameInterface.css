@@ -1,3 +1,12 @@
+.game-viewport {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
 .tree-size {
     height: 125px;
     width: auto;
@@ -41,23 +50,34 @@
     grid-template-columns: 1fr 300px;
     grid-template-rows: 1fr 200px;
     grid-template-areas: 
-        "gameworld sidebar"
-        "messages sidebar";
+        "gameworld interface"
+        "messages interface";
+    
+    font-family: 'OSRS-Bold-12', sans-serif;
+    font-size: 20px;
+    line-height: 1.2;
+    color: black;
 }
 
 .area-gameworld {
     grid-area: gameworld;
     background: #ccc;
     position: relative;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .area-messages {
     grid-area: messages;
     overflow-y: auto;
+    min-height: 0;
+    overflow: hidden;
+    z-index: 10;
 }
 
 .area-interface {
-    grid-area: sidebar; 
+    grid-area: interface; 
+    z-index: 10;
     background: #777;
     display: flex;
     flex-direction: column;

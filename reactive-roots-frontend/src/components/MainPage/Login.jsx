@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { determineLevel } from '../GameInterface/utils/woodcuttingUtils';
 
-const Login = ({ userId, setUserId, onLoginSuccess }) => {
+const Login = ({ onLoginSuccess }) => {
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -68,7 +67,7 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
 
             {/* error message only renders if there is an error */}
             {errors.form && <p className='error-message'>{errors.form}</p>}
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} className='form-container'>
                 <fieldset>
                     <legend>Enter info</legend>
 
@@ -77,7 +76,8 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
                         type="text" 
                         id="username" 
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)} 
+                        onChange={(e) => setUsername(e.target.value)}
+                        className='input-color'
                     />
                     {errors.username && <p className='error-message'>{errors.username}</p>}
 
@@ -86,13 +86,16 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
                         type="password" 
                         id="password" 
                         value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        className='input-color' 
                     />
                     {errors.password && <p className='error-message'>{errors.password}</p>}
 
                 </fieldset>
 
-                <button type='submit'>Log In</button>
+                <div className='cta-button-container'>
+                    <button type='submit' className='osrs-button'>Log In</button>
+                </div>
             </form>
 
         </>

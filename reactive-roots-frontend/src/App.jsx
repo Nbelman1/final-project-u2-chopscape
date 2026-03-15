@@ -5,7 +5,7 @@ import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
 import './components/MainPage/MainPage.css';
 import InterfaceTabs from './components/UserInterface/InterfaceTabs/InterfaceTabs';
-import Home from './components/MainPage/Home';
+import Home from './components/MainPage/Home/Home';
 import CreateAccount from './components/MainPage/CreateAccount';
 import Login from './components/MainPage/Login';
 import GameInterface from './components/GameInterface/components/GameInterface';
@@ -303,7 +303,7 @@ function App() {
 
   return (
     <>
-
+      {/* only rendered in Settings screen */}
       <ConfirmationModal 
           isOpen={isDeleteModalOpen}
           message="This will permanently delete your account. Are you sure?"
@@ -320,7 +320,6 @@ function App() {
         />} >
           <Route path='/' element={<Home 
             isLoggedIn={isLoggedIn}
-            userId={userId}
           />} />
           <Route path='/create-account' element={<CreateAccount />} />
           <Route path='/login' element={<Login 

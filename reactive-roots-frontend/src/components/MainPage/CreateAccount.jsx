@@ -93,7 +93,7 @@ const CreateAccount = () => {
         <>
             <h2>Create Account</h2>
 
-            <form onSubmit={handleCreateAccount}>
+            <form onSubmit={handleCreateAccount} className='form-container'>
                 <fieldset>
                     <legend>Enter info</legend>
 
@@ -103,6 +103,7 @@ const CreateAccount = () => {
                         id="username" 
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        className='input-color'
                     />
                     {errors.username && <p className='error-message'>{errors.username}</p>}
 
@@ -111,12 +112,16 @@ const CreateAccount = () => {
                         type="password" 
                         id="password" 
                         value={password} 
-                        onChange={(e) => setPassword(e.target.value)}  
+                        onChange={(e) => setPassword(e.target.value)}
+                        className='input-color'
                     />
                     {errors.password && <p className='error-message'>{errors.password}</p>}
                 </fieldset>
 
-                <button type='submit'>Create Account</button>
+                <div className='cta-button-container'>
+                    <button type='submit' className='osrs-button'>Create Account</button>
+                </div>
+
             </form>
 
         </>

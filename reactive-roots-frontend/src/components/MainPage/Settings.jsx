@@ -37,7 +37,7 @@ const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
         <> 
             <h2>Account Settings</h2>
 
-            <div className="settings-info">
+            <div className="settings-info osrs-font-rendering">
                 <p>Username: <strong>{profile?.username || "Loading..."}</strong> </p>
                 <p>Date created: <strong>{formattedDate}</strong> </p>
                 <p>Woodcutting level: <strong>{profile?.levelWoodcutting || 1}</strong> </p>

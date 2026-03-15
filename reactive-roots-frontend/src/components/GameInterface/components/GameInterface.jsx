@@ -1,7 +1,6 @@
 import { LOGS } from '../../../data/logs';
 import Tree from './Tree';
 import Axe from './Axe';
-import { useState } from 'react';
 
 const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChopping, isChoppingRef }) => {
 
@@ -9,28 +8,30 @@ const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, o
     const forest = ["Tree", "Tree", "Tree", "Tree", "Oak tree", "Oak tree", "Willow tree"];
 
     return (
-        <div className='forest-container'>
-            <div className='tree-grid'>
-                {forest.map((treeName, index) => {
-                    const treeObj = LOGS.find(el => el.tree === treeName);
+        <div className='game-viewport game-layout'>
+            <div className='area-gameworld forest-container'>
+                <div className='tree-grid'>
+                    {forest.map((treeName, index) => {
+                        const treeObj = LOGS.find(el => el.tree === treeName);
 
-                    return (
-                        <Tree
-                            key={`${treeName}-${index}`}
-                            treeData={treeObj}
-                            currentLevel={currentLevel}
-                            inventory={inventory}
-                            isChoppingRef={isChoppingRef}
-                            onGainExp={onGainExp}
-                            onAddMessage={onAddMessage}
-                            onAddToInventory={onAddToInventory}
-                            onStartGlobalChop={onStartGlobalChop}
-                            onStopGlobalChop={onStopGlobalChop}
-                        />
-                    );
-                })}
+                        return (
+                            <Tree
+                                key={`${treeName}-${index}`}
+                                treeData={treeObj}
+                                currentLevel={currentLevel}
+                                inventory={inventory}
+                                isChoppingRef={isChoppingRef}
+                                onGainExp={onGainExp}
+                                onAddMessage={onAddMessage}
+                                onAddToInventory={onAddToInventory}
+                                onStartGlobalChop={onStartGlobalChop}
+                                onStopGlobalChop={onStopGlobalChop}
+                            />
+                        );
+                    })}
 
-                {isChopping && <Axe />}
+                    {isChopping && <Axe />}
+                </div>
             </div>
         </div>
     );
