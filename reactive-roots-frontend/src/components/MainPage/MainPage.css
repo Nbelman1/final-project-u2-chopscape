@@ -47,6 +47,10 @@ fieldset {
   border-color: rgb(181, 176, 176);
 }
 
+.centered {
+  text-align: center;
+}
+
 input:focus {
   border-color: cyan;
   outline: none;
@@ -63,6 +67,8 @@ input:focus {
 .form-container {
   font-family: 'OSRS-Bold-12', sans-serif;
   font-size: 24px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .header-container {
@@ -87,12 +93,45 @@ input:focus {
 .main-page-container {
   background-color: #433712;
   color: rgb(181, 176, 176);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .footer-container {
   background-color: #045C0E;
   text-align: center;
   padding: 1px;
+}
+
+.login-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.login-box {
+  background-color:#3d3f49;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #287778;
+}
+
+.forest-bg {
+  background-image: url('/images/forest-entrance.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 75vh;
 }
 
 .disclaimer-container {
@@ -226,6 +265,7 @@ input:focus {
   width: 35%;
   margin: auto;
   text-align: center;
+  border-radius: 4px;
 }
 
 .error-message {
@@ -234,4 +274,5 @@ input:focus {
   width: 35%;
   margin: auto;
   text-align: center;
+  border-radius: 4px;  
 }

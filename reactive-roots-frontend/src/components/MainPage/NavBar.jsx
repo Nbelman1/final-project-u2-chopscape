@@ -13,8 +13,8 @@ const NavBar = ({ isLoggedIn }) => {
             </>
           ) : (
             <>
-              <Link to='/login'>Log In </Link>
               <Link to='/create-account'>Create Account </Link>
+              <Link to='/login'>Log In </Link>
             </>
           )}
 

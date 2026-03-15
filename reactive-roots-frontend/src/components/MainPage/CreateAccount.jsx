@@ -90,7 +90,7 @@ const CreateAccount = () => {
 
     
     return (
-        <>
+        <div className='login-page-wrapper'>
             <h2>Create Account</h2>
 
             <form onSubmit={handleCreateAccount} className='form-container'>
@@ -124,7 +124,7 @@ const CreateAccount = () => {
 
             </form>
 
-        </>
+        </div>
     );
 };
 

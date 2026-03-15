@@ -7,8 +7,12 @@ const MainLayout = ({ isLoggedIn }) => {
     return (
         <div className='main-page-container'>
           <Header isLoggedIn={isLoggedIn}/>
+
           {/* changes which component is rendered based on Route */}
-          <Outlet /> 
+          <main className='main-content'>
+            <Outlet />
+          </main> 
+          
           <Footer />
         </div>
     );
