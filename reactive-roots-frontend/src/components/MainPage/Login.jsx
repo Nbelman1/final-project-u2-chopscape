@@ -7,21 +7,34 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    
-    // TODO: if user already exists, provide error message
+    const [errors, setErrors] = useState({});
 
-    // TODO: navigate user to home page instead of /game 
-
-    // TODO: add validation for username and password 
-
-    // clear fields 
+    // clear fields on component mount
     useEffect(() => {
         setUsername("");
         setPassword("");
-    }, []); // run on component mount 
+    }, []); 
+
+    async function validateLoginForm(formData) {
+        let tempErrors = {};
+
+        if (!formData.username.trim()) {
+            tempErrors.username = "Username is required.";
+        }
+        if (!formData.password.trim()) {
+            tempErrors.password = "Password is required.";
+        }
+
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    }
 
     async function handleLogin(event) {
         event.preventDefault();
+
+        const formData = { username, password };
+        const isValid = await validateLoginForm(formData);
+        if (!isValid) return; // stop if fields are empty 
 
         try {
             const response = await fetch('http://localhost:8080/api/auth/login', {
@@ -29,56 +42,54 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                }),
+                body: JSON.stringify(formData),
             });
             
             if (response.ok) {
                 const sessionData = await response.json();
-                
-                setUserId(sessionData.userId); // capture userId value from response body
-                console.log("Logged in User ID:", sessionData.userId);
-                onLoginSuccess(sessionData);
 
-                navigate('/');
-
+                const completeData = {
+                    ...sessionData,
+                    username: username
+                };
+                onLoginSuccess(completeData);
+                navigate('/', { state : { message: `Welcome back, ${username}!` } });
             } else {
-                // TODO: add error message to page
+                setErrors({ form: "Invalid username or password." });
             }
         } catch (error) {
-            console.log('Connection error:', error);
-            // TODO: add error message to page 
+            setErrors({ form: "Could not connect to server." });
         }
-
     }
-    
+
     return (
         <>
             <h2>Log In</h2>
 
+            {/* error message only renders if there is an error */}
+            {errors.form && <p className='error-message'>{errors.form}</p>}
             <form onSubmit={handleLogin}>
                 <fieldset>
-                <legend>Enter info</legend>
+                    <legend>Enter info</legend>
 
-                <label htmlFor="username">Username: </label>
+                    <label htmlFor="username">Username: </label>
                     <input 
                         type="text" 
                         id="username" 
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required 
+                        onChange={(e) => setUsername(e.target.value)} 
                     />
+                    {errors.username && <p className='error-message'>{errors.username}</p>}
 
-                <label htmlFor="password"> Password: </label>
+                    <label htmlFor="password"> Password: </label>
                     <input 
                         type="password" 
                         id="password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
-                        required 
                     />
+                    {errors.password && <p className='error-message'>{errors.password}</p>}
+
                 </fieldset>
 
                 <button type='submit'>Log In</button>

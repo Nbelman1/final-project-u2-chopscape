@@ -27,6 +27,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/exists/{username}")
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+        return ResponseEntity.ok(repository.existsByUsername(username));
+    }
+
     // fetch list of all users
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {

@@ -18,7 +18,9 @@ import { LOGS } from './data/logs';
 
 // TODO: erase all console.logs
 
-// TODO: re-route login button to go to home screen, let user click "play"
+// TODO: wireframes
+
+// TODO: Intellij -> clear up endpoints not in use
 
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
@@ -87,7 +89,10 @@ function App() {
   const [activeTab, setActiveTab] = useState("skills");
   const [isLoggedIn, setIsLoggedIn] = useState(!!savedSession);
   const [expTable, setExpTable] = useState([]);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(() => {
+    const savedId = localStorage.getItem('userId');
+    return savedId ? savedId : null;
+  });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   // refs
@@ -133,13 +138,13 @@ function App() {
   }
 
   async function handleLogout() {
+
     const currentId = stats.userId;
     const currentData = { ...stats };
 
     // save progress
     if (currentId) {
       await syncUserStats(currentId, currentData);
-      console.log("final save successful");
     }
 
     // clear local storage, states (for UI), and refs (for engine)
@@ -165,46 +170,38 @@ function App() {
 
 
   async function handleLoginSuccess(sessionData) {
-    try {
+    // save sessionData to browser for persistence 
+    localStorage.setItem('userSession', JSON.stringify(sessionData));
 
-      console.log("login payload:", sessionData);
+    const response = await fetch('http://localhost:8080/api/levels');
+    const levelTable = await response.json();
+    setExpTable(levelTable);
 
-      // save sessionData to browser for persistence 
-      localStorage.setItem('userSession', JSON.stringify(sessionData));
-
-      const response = await fetch('http://localhost:8080/api/levels');
-      const levelTable = await response.json();
-      setExpTable(levelTable);
-
-      const freshInventory = Array(28).fill(null);
-      
-      // assign each item to correct slot
-      if (sessionData.inventory) {
-        sessionData.inventory.forEach(item => {
-          freshInventory[item.slotPosition] = item;
-        });
-      }
-      // include freshInventory in new stats state
-      const updatedStats = {
-        userId: sessionData.userId,
-        username: sessionData.username,
-        dateCreated: sessionData.dateCreated,
-        expWoodcutting: sessionData.expWoodcutting,
-        levelWoodcutting: sessionData.levelWoodcutting,
-        inventory: freshInventory
-      };
-
-      setInventory(freshInventory);
-      setStats(updatedStats); // for back end
-      setWoodcuttingExp(sessionData.expWoodcutting); // for frontend / skills panel
-      expRef.current = sessionData.expWoodcutting; // for engine
-      setIsLoggedIn(true);
-
-      console.log("updatedstats: ", updatedStats);
-
-    } catch (error) {
-      console.log("failed to load game data:", error);
+    const freshInventory = Array(28).fill(null);
+    
+    // assign each item to correct slot
+    if (sessionData.inventory) {
+      sessionData.inventory.forEach(item => {
+        freshInventory[item.slotPosition] = item;
+      });
     }
+    // include freshInventory in new stats state
+    const updatedStats = {
+      userId: sessionData.userId,
+      username: sessionData.username,
+      dateCreated: sessionData.dateCreated,
+      expWoodcutting: sessionData.expWoodcutting,
+      levelWoodcutting: sessionData.levelWoodcutting,
+      inventory: freshInventory
+    };
+
+    console.log(updatedStats);
+
+    setInventory(freshInventory);
+    setStats(updatedStats); // for back end
+    setWoodcuttingExp(sessionData.expWoodcutting); // for frontend / skills panel
+    expRef.current = sessionData.expWoodcutting; // for engine
+    setIsLoggedIn(true);
   };
 
   function handleAddMessage(msg) {
@@ -250,7 +247,6 @@ function App() {
     // set Inventory state for frontend
     setInventory(newInventory);
 
-    console.log("item dropped at index:", index);
   }
 
   // logic for state changes on successful log chop
@@ -320,7 +316,10 @@ function App() {
           isLoggedIn={isLoggedIn} 
           setIsLoggedIn={setIsLoggedIn} 
         />} >
-          <Route path='/' element={<Home isLoggedIn={isLoggedIn}/>} />
+          <Route path='/' element={<Home 
+            isLoggedIn={isLoggedIn}
+            userId={userId}
+          />} />
           <Route path='/create-account' element={<CreateAccount />} />
           <Route path='/login' element={<Login 
             userId={userId}
@@ -332,6 +331,7 @@ function App() {
             onDeleteAccount={handleDeleteAccount}
             setIsDeleteModalOpen={setIsDeleteModalOpen}
             stats={stats}
+            username={stats?.username}
           />} />
         </Route>
         

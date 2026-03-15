@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
 
-const Settings = ({ onLogout, setIsDeleteModalOpen, stats }) => {
-    const userId = stats.userId;
+const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
     const [profile, setProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (userId) {
-            fetch(`http://localhost:8080/api/users/profile/${userId}`)
-                .then(res => res.json())
-                .then(data => setProfile(data))
+        if (username) {
+            setLoading(true);
+            fetch(`http://localhost:8080/api/users/profile/${username}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("User not found on server");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setProfile(data);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    setProfile(null);
+                    setLoading(false);
+                });
         }
-    }, [userId]);
+    }, [username]);
 
     const formattedDate = profile?.dateCreated
         ? new Date(profile.dateCreated).toLocaleDateString(undefined, {
@@ -25,7 +38,7 @@ const Settings = ({ onLogout, setIsDeleteModalOpen, stats }) => {
             <h2>Account Settings</h2>
 
             <div className="settings-info">
-                <p>Username: <strong>{profile?.username || "Guest"}</strong> </p>
+                <p>Username: <strong>{profile?.username || "Loading..."}</strong> </p>
                 <p>Date created: <strong>{formattedDate}</strong> </p>
                 <p>Woodcutting level: <strong>{profile?.levelWoodcutting || 1}</strong> </p>
                 <p>Woodcutting experience: <strong>{profile?.expWoodcutting?.toLocaleString() || 0}</strong> </p>
