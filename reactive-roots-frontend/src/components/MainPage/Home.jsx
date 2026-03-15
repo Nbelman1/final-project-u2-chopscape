@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-const Home = ({ isLoggedIn }) => {
+const Home = ({ isLoggedIn, userId }) => {
+
+  const location = useLocation();
+
+  // const showMessage = location.state?.showSuccess;
+
   return (
     <>
       
@@ -15,8 +21,9 @@ const Home = ({ isLoggedIn }) => {
         </>
       )}
 
-      <p>Success Message (hide this)</p>
-
+      {location.state?.message && (
+        <p className='success-message'>{location.state.message}</p>
+      )}
       <section>
         <h2>How to Play</h2>
         <ul>

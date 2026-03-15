@@ -20,3 +20,15 @@
   text-align: center;
   color: black;
 }
+
+.success-message {
+  background-color: rgb(13, 143, 13);
+  color: white;
+  width: 400px;
+}
+
+.error-message {
+  background-color: rgb(153, 50, 50);
+  color: white;
+  width: 400px;
+}
