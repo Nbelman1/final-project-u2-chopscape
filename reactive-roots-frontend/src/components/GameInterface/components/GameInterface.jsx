@@ -1,7 +1,9 @@
-import Tree from './Tree';
 import { LOGS } from '../../../data/logs';
+import Tree from './Tree';
+import Axe from './Axe';
+import { useState } from 'react';
 
-const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChoppingRef }) => {
+const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, onStartGlobalChop, onStopGlobalChop, currentLevel, isChopping, isChoppingRef }) => {
 
     // render 4 Trees, 2 Oak trees, 1 Willow tree
     const forest = ["Tree", "Tree", "Tree", "Tree", "Oak tree", "Oak tree", "Willow tree"];
@@ -12,7 +14,6 @@ const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, o
                 {forest.map((treeName, index) => {
                     const treeObj = LOGS.find(el => el.tree === treeName);
 
-                    
                     return (
                         <Tree
                             key={`${treeName}-${index}`}
@@ -28,6 +29,8 @@ const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, o
                         />
                     );
                 })}
+
+                {isChopping && <Axe />}
             </div>
         </div>
     );
