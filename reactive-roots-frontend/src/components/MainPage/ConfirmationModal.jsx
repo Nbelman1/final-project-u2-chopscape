@@ -7,8 +7,8 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
         <h3>Confirm Deletion</h3>
         <p>{message}</p>
         <div className='modal-buttons'>
-          <button className='cancel-btn' onClick={onCancel}>Cancel</button>
-          <button className='confirm-btn' onClick={onConfirm}>Delete Account</button>
+          <button className='cancel-btn osrs-button' onClick={onCancel}>Cancel</button>
+          <button className='confirm-btn delete-button' onClick={onConfirm}>Delete Account</button>
         </div>
       </div>
     </div>

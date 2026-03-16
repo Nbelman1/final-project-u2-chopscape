@@ -142,7 +142,7 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
                 className={'tree-size'}
                 onClick={() => handleLocalClick()}
             />
-            <h3>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
+            <h3 className='color-yellow'>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
             
         </div>
     );

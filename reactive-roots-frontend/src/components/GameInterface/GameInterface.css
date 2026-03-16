@@ -8,9 +8,13 @@
 }
 
 .tree-size {
-    height: 125px;
+    height: 110px;
     width: auto;
     max-width: fit-content;
+}
+
+.tree-size:hover {
+    cursor: pointer;
 }
 
 .tree-grid {
@@ -21,9 +25,19 @@
     min-height: 100%;
 }
 
+.tree-wrapper {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .axe-icon {
     position: absolute;
-    bottom: 10%;
+    bottom: 7%;
     right: 30%;
     width: 125px;
     /* user can click through the axe */
@@ -52,16 +66,14 @@
     grid-template-areas: 
         "gameworld interface"
         "messages interface";
-    
     font-family: 'OSRS-Bold-12', sans-serif;
     font-size: 20px;
     line-height: 1.2;
-    color: black;
 }
 
 .area-gameworld {
     grid-area: gameworld;
-    background: #ccc;
+    background: #365745;
     position: relative;
     min-width: 0;
     overflow: hidden;
@@ -78,8 +90,15 @@
 .area-interface {
     grid-area: interface; 
     z-index: 10;
-    background: #777;
+    background: #4b443c;
+    border: 3px solid #3e3529;
     display: flex;
     flex-direction: column;
+    padding: 2px;
 }
 
+.color-yellow {
+    color: yellow;
+    text-shadow: 1px 1px 1px black;
+    text-align: center;
+}

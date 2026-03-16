@@ -10,23 +10,25 @@ const GameInterface = ({ inventory, onAddToInventory, onAddMessage, onGainExp, o
     return (
         <div className='game-viewport game-layout'>
             <div className='area-gameworld forest-container'>
-                <div className='tree-grid'>
+                <div className='tree-grid forest-setting-bg'>
                     {forest.map((treeName, index) => {
                         const treeObj = LOGS.find(el => el.tree === treeName);
 
                         return (
-                            <Tree
-                                key={`${treeName}-${index}`}
-                                treeData={treeObj}
-                                currentLevel={currentLevel}
-                                inventory={inventory}
-                                isChoppingRef={isChoppingRef}
-                                onGainExp={onGainExp}
-                                onAddMessage={onAddMessage}
-                                onAddToInventory={onAddToInventory}
-                                onStartGlobalChop={onStartGlobalChop}
-                                onStopGlobalChop={onStopGlobalChop}
-                            />
+                            <div className='tree-wrapper' key={`${treeName}-${index}`}>
+                                <Tree
+                                    key={`${treeName}-${index}`}
+                                    treeData={treeObj}
+                                    currentLevel={currentLevel}
+                                    inventory={inventory}
+                                    isChoppingRef={isChoppingRef}
+                                    onGainExp={onGainExp}
+                                    onAddMessage={onAddMessage}
+                                    onAddToInventory={onAddToInventory}
+                                    onStartGlobalChop={onStartGlobalChop}
+                                    onStopGlobalChop={onStopGlobalChop}
+                                />
+                            </div>
                         );
                     })}
 
