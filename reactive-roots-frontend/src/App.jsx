@@ -17,10 +17,6 @@ import { determineLevel } from './components/GameInterface/utils/woodcuttingUtil
 import { LOGS } from './data/logs';
 import RotateOverlay from './components/MainPage/RotateOverlay';
 
-// TODO: wireframes
-
-// TODO: Intellij -> clear up endpoints not in use
-
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
   dataRef.current = statsData;

@@ -1,11 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './MessageLog.css';
 
-// TODO:
-// clear message log on logout
-// display empty message on login
-
-
 const MessageLog = ({ messages = [] }) => {
 
     // reference container
