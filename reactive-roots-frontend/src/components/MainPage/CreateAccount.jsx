@@ -90,40 +90,41 @@ const CreateAccount = () => {
 
     
     return (
-        <div className='login-page-wrapper'>
-            <h2>Create Account</h2>
+        <div className='login-page-wrapper start-bg'>
+            <div className='login-box'>
+                <h2 className='centered'>Start Your Adventure</h2>
 
-            <form onSubmit={handleCreateAccount} className='form-container'>
-                <fieldset>
-                    <legend>Enter info</legend>
+                <form onSubmit={handleCreateAccount} className='form-container'>
+                    <fieldset>
+                        <legend>Enter info</legend>
 
-                    <label htmlFor="username">Username: </label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className='input-color'
-                    />
-                    {errors.username && <p className='error-message'>{errors.username}</p>}
+                        <label htmlFor="username">Username: </label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className='input-color'
+                        />
+                        {errors.username && <p className='error-message'>{errors.username}</p>}
 
-                    <label htmlFor="password"> Password: </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)}
-                        className='input-color'
-                    />
-                    {errors.password && <p className='error-message'>{errors.password}</p>}
-                </fieldset>
+                        <label htmlFor="password"> Password: </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)}
+                            className='input-color'
+                        />
+                        {errors.password && <p className='error-message'>{errors.password}</p>}
+                    </fieldset>
 
-                <div className='cta-button-container'>
-                    <button type='submit' className='osrs-button'>Create Account</button>
-                </div>
+                    <div className='cta-button-container'>
+                        <button type='submit' className='osrs-button'>Create Account</button>
+                    </div>
 
-            </form>
-
+                </form>
+            </div>
         </div>
     );
 };

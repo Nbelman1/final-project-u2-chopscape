@@ -135,6 +135,14 @@ input:focus {
   height: 75vh;
 }
 
+.start-bg {
+  background-image: url('/images/start-adventure.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 75vh;
+}
+
 .disclaimer-container {
   width: 80%;
   margin: 20px auto;
