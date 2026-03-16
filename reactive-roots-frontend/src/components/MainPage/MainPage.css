@@ -302,7 +302,8 @@ input:focus {
 
 .delete-button {
   display: inline-block;
-  
+  padding: 15px 40px;
+  margin: 10px;
 
   background-color: #4a422f;
   color: rgb(153, 50, 50);

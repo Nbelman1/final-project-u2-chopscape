@@ -27,23 +27,10 @@ public class UserController {
         this.userService = userService;
     }
 
+    // auth - check if username exists
     @GetMapping("/exists/{username}")
     public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
         return ResponseEntity.ok(repository.existsByUsername(username));
-    }
-
-    // fetch list of all users
-    @GetMapping()
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(repository.findAll());
-    }
-
-    // fetch info for one user
-    @GetMapping("{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build()); // 404
     }
 
     // get user profile, for settings screen
@@ -51,24 +38,6 @@ public class UserController {
     public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable String username) {
         UserProfileDTO profile = userService.getUserProfile(username);
         return ResponseEntity.ok(profile);
-    }
-
-    // add new user
-    @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = repository.save(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED); // 201
-    }
-
-    // edit username
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User updatedUser) {
-        return repository.findById(id)
-                .map(existingUser -> {
-                    existingUser.setUsername(updatedUser.getUsername());
-                    return ResponseEntity.ok(repository.save(existingUser));
-                })
-                .orElse(ResponseEntity.notFound().build()); // 404
     }
 
     // delete user (account deletion)
