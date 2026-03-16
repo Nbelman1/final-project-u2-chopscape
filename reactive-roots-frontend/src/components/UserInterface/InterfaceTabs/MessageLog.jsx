@@ -1,19 +1,15 @@
 import { useEffect, useRef } from 'react';
 import './MessageLog.css';
 
+// TODO:
 // clear message log on logout
 // display empty message on login
 
-// TODO: add timestamps
-// TODO: limit messages to 7 most recent 
-// TODO: if time, add a scroll bar
 
 const MessageLog = ({ messages = [] }) => {
 
     // reference container
     const logContainerRef = useRef(null);
-
-
 
     // run when messages are updated
     useEffect(() => {

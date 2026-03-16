@@ -102,3 +102,24 @@
     text-shadow: 1px 1px 1px black;
     text-align: center;
 }
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .game-layout {
+    grid-template-columns: 1fr 200px;
+    grid-template-rows: 1fr 25%;
+    font-size: 14px;
+  }
+  .area-interface {
+    padding: 5px;
+  }
+  .tree-size {
+    height: auto;
+    width: 80%;
+    max-width: 80px;
+  }
+  .tree-grid {
+    gap: 5px;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 10px;
+  }
+}

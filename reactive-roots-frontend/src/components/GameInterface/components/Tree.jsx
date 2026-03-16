@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
 
-// TODO: add status bar for isChopping 
-
 const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop, inventory }) => {
     
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);

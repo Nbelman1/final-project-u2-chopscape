@@ -15,14 +15,11 @@ import Settings from './components/MainPage/Settings';
 import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
-
-// TODO: erase all console.logs
+import RotateOverlay from './components/MainPage/RotateOverlay';
 
 // TODO: wireframes
 
 // TODO: Intellij -> clear up endpoints not in use
-
-// TODO: add exp remaining to next level
 
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
@@ -165,6 +162,7 @@ function App() {
     setWoodcuttingExp(0);
     setInventory(emptyInv);
     setActiveTab("skills");
+    setMessages([]);
 
     // return to home page 
     navigate('/');  
@@ -196,8 +194,6 @@ function App() {
       levelWoodcutting: sessionData.levelWoodcutting,
       inventory: freshInventory
     };
-
-    console.log(updatedStats);
 
     setInventory(freshInventory);
     setStats(updatedStats); // for back end
@@ -303,6 +299,9 @@ function App() {
 
   return (
     <>
+      {/* only rendered on small screens */}
+      <RotateOverlay />
+
       {/* only rendered in Settings screen */}
       <ConfirmationModal 
           isOpen={isDeleteModalOpen}
