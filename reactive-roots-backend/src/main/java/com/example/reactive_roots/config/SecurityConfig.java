@@ -32,7 +32,6 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-//                        TODO: update requestMatchers to lock api calls
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/users/profile/**",

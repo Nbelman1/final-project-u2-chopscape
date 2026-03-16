@@ -1,11 +1,8 @@
 // success rate per axe swing based on level
 // can adjust to stronger axes or higher-level trees later on
 
-// level 1 = 0.2539
-// TODO: fix level 1 successRate
-
 export const CHOP_CHANCES = [
-    { level: 1, treeType: "tree", axeType: "bronze", successRate: 1 },
+    { level: 1, treeType: "tree", axeType: "bronze", successRate: 0.2539 },
     { level: 2, treeType: "tree", axeType: "bronze", successRate: 0.2578 },
     { level: 3, treeType: "tree", axeType: "bronze", successRate: 0.2656 },
     { level: 4, treeType: "tree", axeType: "bronze", successRate: 0.2695 },

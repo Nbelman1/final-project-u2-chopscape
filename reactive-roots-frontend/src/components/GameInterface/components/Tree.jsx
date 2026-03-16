@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
 
-// TODO: add status bar for isChopping 
-
 const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop, inventory }) => {
     
     const [isNodeAvailable, setIsNodeAvailable] = useState(true);
@@ -142,7 +140,7 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
                 className={'tree-size'}
                 onClick={() => handleLocalClick()}
             />
-            <h3>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
+            <h3 className='color-yellow'>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
             
         </div>
     );

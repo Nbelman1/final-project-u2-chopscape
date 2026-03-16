@@ -1,7 +1,5 @@
 import { LOGS } from "../../../data/logs";
 
-// TODO: fix drop function
-
 const InventoryPanel = ({ stats, onDropItem }) => {
 
     const inventory = stats.inventory;

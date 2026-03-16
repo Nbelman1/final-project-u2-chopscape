@@ -5,7 +5,7 @@ import './components/UserInterface/InterfaceTabs/InterfaceTabs.css';
 import './components/GameInterface/GameInterface.css';
 import './components/MainPage/MainPage.css';
 import InterfaceTabs from './components/UserInterface/InterfaceTabs/InterfaceTabs';
-import Home from './components/MainPage/Home';
+import Home from './components/MainPage/Home/Home';
 import CreateAccount from './components/MainPage/CreateAccount';
 import Login from './components/MainPage/Login';
 import GameInterface from './components/GameInterface/components/GameInterface';
@@ -15,14 +15,7 @@ import Settings from './components/MainPage/Settings';
 import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
-
-// TODO: erase all console.logs
-
-// TODO: wireframes
-
-// TODO: Intellij -> clear up endpoints not in use
-
-// TODO: add exp remaining to next level
+import RotateOverlay from './components/MainPage/RotateOverlay';
 
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
@@ -165,6 +158,7 @@ function App() {
     setWoodcuttingExp(0);
     setInventory(emptyInv);
     setActiveTab("skills");
+    setMessages([]);
 
     // return to home page 
     navigate('/');  
@@ -196,8 +190,6 @@ function App() {
       levelWoodcutting: sessionData.levelWoodcutting,
       inventory: freshInventory
     };
-
-    console.log(updatedStats);
 
     setInventory(freshInventory);
     setStats(updatedStats); // for back end
@@ -303,7 +295,10 @@ function App() {
 
   return (
     <>
+      {/* only rendered on small screens */}
+      <RotateOverlay />
 
+      {/* only rendered in Settings screen */}
       <ConfirmationModal 
           isOpen={isDeleteModalOpen}
           message="This will permanently delete your account. Are you sure?"
@@ -320,7 +315,6 @@ function App() {
         />} >
           <Route path='/' element={<Home 
             isLoggedIn={isLoggedIn}
-            userId={userId}
           />} />
           <Route path='/create-account' element={<CreateAccount />} />
           <Route path='/login' element={<Login 

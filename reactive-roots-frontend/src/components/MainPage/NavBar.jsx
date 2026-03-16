@@ -1,20 +1,20 @@
 import { Link } from "react-router-dom";
 
-const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
+const NavBar = ({ isLoggedIn }) => {
   return (
     <>
-      <nav>
-        <Link to='/'>Home | </Link>
+      <nav className="nav-container">
+        <Link to='/'>Home </Link>
 
           {isLoggedIn ? (
             <>
-              <Link to='/game'>Play | </Link>
-              <Link to='/settings'>Settings</Link>
+              <Link to='/game'>Play </Link>
+              <Link to='/settings'>Settings </Link>
             </>
           ) : (
             <>
-              <Link to='/login'>Log In | </Link>
-              <Link to='/create-account'>Create Account</Link>
+              <Link to='/create-account'>Create Account </Link>
+              <Link to='/login'>Log In </Link>
             </>
           )}
 

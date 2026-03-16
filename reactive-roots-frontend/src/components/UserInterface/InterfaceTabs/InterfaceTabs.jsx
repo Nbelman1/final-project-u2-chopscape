@@ -15,18 +15,18 @@ const InterfaceTabs = ({ stats, activeTab, setActiveTab, inventory, onDropItem, 
 
     const renderTab = (tab) => {
         return (
-        <div 
-            key={tab.id}
-            // if tab selected is active tab, its className = "active"
-            className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
-            label={tab.label}
-            onClick={() => setActiveTab(tab.id)}
-        >
-            <img 
-                src={`/images/${tab.icon}`}
-                alt={tab.label}
-            />
-        </div>
+            <div 
+                key={tab.id}
+                // if tab selected is active tab, its className = "active"
+                className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
+                label={tab.label}
+                onClick={() => setActiveTab(tab.id)}
+            >
+                <img 
+                    src={`/images/${tab.icon}`}
+                    alt={tab.label}
+                />
+            </div>
         );
     };
 
@@ -37,6 +37,7 @@ const InterfaceTabs = ({ stats, activeTab, setActiveTab, inventory, onDropItem, 
             </div>
 
             <div className="active-panel-content">
+
                 {activeTab === 'inventory' && (
                     <InventoryPanel
                         stats={stats}
@@ -52,13 +53,14 @@ const InterfaceTabs = ({ stats, activeTab, setActiveTab, inventory, onDropItem, 
                             expTable={expTable}
                         />
                     ) : (
-                    <div className="loading-spinner">Loading skills...</div>
+                    <div>Loading skills...</div>
                     )
                 )}
 
                 {activeTab === 'logout' && (
                     <LogoutMenu onLogout={onLogout} />
                 )}
+                
 
             </div>
 

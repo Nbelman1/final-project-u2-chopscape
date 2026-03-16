@@ -42,12 +42,6 @@ public class PlayerStatController {
         return ResponseEntity.ok(stats);
     }
 
-    // fetch stats for all players
-    @GetMapping()
-    public ResponseEntity<List<PlayerStat>> getAllPlayerStats() {
-        return ResponseEntity.ok(repository.findAll());
-    }
-
     // fetch a specific player's stats (settings screen)
     @GetMapping("{id}")
     public ResponseEntity<PlayerStat>  getPlayerStatsById(@PathVariable int id) {

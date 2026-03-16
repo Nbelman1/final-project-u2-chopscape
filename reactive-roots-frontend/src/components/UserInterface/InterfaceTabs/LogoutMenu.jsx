@@ -1,14 +1,14 @@
 const LogoutMenu = ({ onLogout }) => {
     return (
-        <>
-            <h2>Thank you for playing Reactive Roots.</h2>
+        <div className="centered">  
+            <h3>Thank you for playing Reactive Roots.</h3>
             <p>We'll see you next time!</p>
             <button 
-                className="logout-container" 
+                className="logout-container delete-button" 
                 onClick={onLogout}
                 >Click here to logout
             </button>
-        </>
+        </div>
     );
 };
 

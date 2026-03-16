@@ -34,19 +34,21 @@ const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
         : "N/A";
 
     return (
-        <> 
-            <h2>Account Settings</h2>
+        <div className="login-page-wrapper">
+            <div className="settings-box"> 
+                <h2 className="light-shadow">Account Settings</h2>
 
-            <div className="settings-info">
-                <p>Username: <strong>{profile?.username || "Loading..."}</strong> </p>
-                <p>Date created: <strong>{formattedDate}</strong> </p>
-                <p>Woodcutting level: <strong>{profile?.levelWoodcutting || 1}</strong> </p>
-                <p>Woodcutting experience: <strong>{profile?.expWoodcutting?.toLocaleString() || 0}</strong> </p>
+                <div className="settings-info osrs-font-rendering">
+                    <p>Username: {profile?.username || "Loading..."} </p>
+                    <p>Date created: {formattedDate} </p>
+                    <p>Woodcutting level: {profile?.levelWoodcutting || 1} </p>
+                    <p>Woodcutting experience: {profile?.expWoodcutting?.toLocaleString() || 0}</p>
+                </div>
+
+                <button onClick={onLogout} className="osrs-button">Log Out</button>
+                <button onClick={() => setIsDeleteModalOpen(true)} className="osrs-button">Delete Account</button>
             </div>
-
-            <button onClick={onLogout}>Log Out</button>
-            <button onClick={() => setIsDeleteModalOpen(true)}>Delete Account</button>
-        </>
+        </div>
     );
 };
 

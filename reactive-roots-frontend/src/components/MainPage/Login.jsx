@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { determineLevel } from '../GameInterface/utils/woodcuttingUtils';
 
-const Login = ({ userId, setUserId, onLoginSuccess }) => {
+const Login = ({ onLoginSuccess }) => {
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -63,39 +62,45 @@ const Login = ({ userId, setUserId, onLoginSuccess }) => {
     }
 
     return (
-        <>
-            <h2>Log In</h2>
+        <div className='login-page-wrapper forest-bg'>
+            <div className='login-box'>
+                <h2 className='centered'>Welcome to Reactive Roots</h2>
 
-            {/* error message only renders if there is an error */}
-            {errors.form && <p className='error-message'>{errors.form}</p>}
-            <form onSubmit={handleLogin}>
-                <fieldset>
-                    <legend>Enter info</legend>
+                {/* error message only renders if there is an error */}
+                {errors.form && <p className='error-message'>{errors.form}</p>}
 
-                    <label htmlFor="username">Username: </label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)} 
-                    />
-                    {errors.username && <p className='error-message'>{errors.username}</p>}
+                <form onSubmit={handleLogin} className='form-container'>
+                    <fieldset>
+                        <legend>Enter info</legend>
 
-                    <label htmlFor="password"> Password: </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                    />
-                    {errors.password && <p className='error-message'>{errors.password}</p>}
+                        <label htmlFor="username">Username: </label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className='input-color'
+                        />
+                        {errors.username && <p className='error-message'>{errors.username}</p>}
 
-                </fieldset>
+                        <label htmlFor="password"> Password: </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)}
+                            className='input-color' 
+                        />
+                        {errors.password && <p className='error-message'>{errors.password}</p>}
 
-                <button type='submit'>Log In</button>
-            </form>
+                    </fieldset>
 
-        </>
+                    <div className='cta-button-container'>
+                        <button type='submit' className='osrs-button'>Log In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 };
 
