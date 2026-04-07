@@ -83,7 +83,7 @@ React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
 
 ## Unsolved Problems
 
-Players are sometimes able to chop trees that have already despawned. To resolve, I will include `isTreeAvailable()` from `Tree.jsx` in `handleStartGlobalChop()` to verify that the desired tree is live before the user can start chopping it.
+The app is stable with no known problems. If you experience a bug, please report on issue on this repository.
 
 ---
 
