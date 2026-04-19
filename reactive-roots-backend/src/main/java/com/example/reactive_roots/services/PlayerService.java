@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PlayerService {
@@ -43,13 +44,15 @@ public class PlayerService {
 
         User user = userRepository.findById(userId).get();
 
-        List<InventoryItem> newItems = data.getInventory().stream().map(dto -> {
-            InventoryItem item = new InventoryItem();
-            item.setItemName(dto.getItemName());
-            item.setQuantity(dto.getQuantity());
-            item.setSlotPosition(dto.getSlotPosition());
-            item.setUser(user);
-            return item;
+        List<InventoryItem> newItems = data.getInventory().stream()
+            .filter(Objects::nonNull)
+            .map(dto -> {
+                InventoryItem item = new InventoryItem();
+                item.setItemName(dto.getItemName());
+                item.setQuantity(dto.getQuantity());
+                item.setSlotPosition(dto.getSlotPosition());
+                item.setUser(user);
+                return item;
         }).toList();
 
         inventoryItemRepository.saveAll(newItems);

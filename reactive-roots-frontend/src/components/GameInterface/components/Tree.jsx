@@ -1,7 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CHOP_CHANCES } from '../../../data/chop-chance';
-
-// TODO: add status bar for isChopping 
 
 const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, onAddToInventory, onStartGlobalChop, onStopGlobalChop, inventory }) => {
     
@@ -11,18 +9,14 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
     const timerRef = useRef(null); // store and clear interval
     const timeElapsedRef = useRef(0);
     const localActionTimeoutRef = useRef(null);
+    const inventoryRef = useRef(inventory);
 
     const activeSessionId = useRef(0); // current chopping loop
 
-    // check if tree is available
-    function isTreeAvailable(isNodeAvailable) {
-        if (isNodeAvailable) {
-            return true;
-        } else if (!isNodeAvailable) {
-            setMessages(prev => [...prev, "The tree needs time to grow."]);
-            return false;
-        }
-    }
+    // update ref when state changes
+    useEffect(() => {
+        inventoryRef.current = inventory;
+    }, [inventory]);
 
     // start timer after first successful chop
     function startDepletionTimer() {
@@ -67,7 +61,10 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
     }
 
     function handleLocalClick() {
-        if (!isTreeAvailable) return;
+        if (!isNodeAvailable) {
+            onAddMessage("You see no reason to chop a stump.");
+            return;
+        }
 
         const isFull = !inventory.includes(null);
         if(isFull) {
@@ -92,19 +89,23 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
 
     // check if chop is successful
     function rollForSuccess(currentLevel, treeData, sessionId) {
-        console.log("chop tick for ", treeData.tree, " - global status: ", isChoppingRef.current);
 
+        // guard clauses
         if (!isChoppingRef.current || sessionId !== activeSessionId.current) {
-            console.log(`killing ghost loop for session ${sessionId}`);
             return;
         }
 
-        if (!isChoppingRef.current) return; // guard clause 
+        if (!isChoppingRef.current) return; 
         
+        if (!inventoryRef.current.includes(null)) {
+            onAddMessage("Your inventory is too full to hold any more logs.");
+            onStopGlobalChop();
+            return;
+        }
+
         const levelIndex = currentLevel - 1;
         const chopData = CHOP_CHANCES[levelIndex]; // account for 0-based indexing
         if(!chopData) {
-            console.log("could not find data for level:", currentLevel);
             return;
         }
         const successRate = chopData.successRate;
@@ -119,7 +120,6 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
             }
             // check if tree should fall
             if (timeElapsedRef.current >= treeData.lifeTime) {
-                console.log("checking ", treeData.tree, ": timer is ", timeElapsedRef.current, " / need ", treeData.lifeTime);
                 fellTree(treeData);
             }
             const levelWasGained = onGainExp(treeData.expGained);
@@ -146,7 +146,7 @@ const Tree = ({ treeData, currentLevel, isChoppingRef, onGainExp, onAddMessage, 
                 className={'tree-size'}
                 onClick={() => handleLocalClick()}
             />
-            <h3>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
+            <h3 className='color-yellow'>{isNodeAvailable ? treeData.tree : `Stump (${treeData.tree})`}</h3>
             
         </div>
     );

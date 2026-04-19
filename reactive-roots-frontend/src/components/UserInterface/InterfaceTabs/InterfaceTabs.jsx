@@ -9,24 +9,24 @@ const TABS = [
     {id: "logout", icon: "logout.png", label: "Logout", position: "bottom"},
 ];
 
-const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, currentLevel }) => {
+const InterfaceTabs = ({ stats, activeTab, setActiveTab, inventory, onDropItem, woodcuttingExp, expTable, onLogout }) => {
     const topTabs = TABS.filter(tab => {return tab.position === "top"});
     const bottomTabs = TABS.filter(tab => {return tab.position === "bottom"});
 
     const renderTab = (tab) => {
         return (
-        <div 
-            key={tab.id}
-            // if tab selected is active tab, its className = "active"
-            className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
-            label={tab.label}
-            onClick={() => setActiveTab(tab.id)}
-        >
-            <img 
-                src={`/images/${tab.icon}`}
-                alt={tab.label}
-            />
-        </div>
+            <div 
+                key={tab.id}
+                // if tab selected is active tab, its className = "active"
+                className={`indiv-tab ${activeTab === tab.id ? "active" : ""}`}
+                label={tab.label}
+                onClick={() => setActiveTab(tab.id)}
+            >
+                <img 
+                    src={`/images/${tab.icon}`}
+                    alt={tab.label}
+                />
+            </div>
         );
     };
 
@@ -37,18 +37,31 @@ const InterfaceTabs = ({ activeTab, setActiveTab, inventory, onDropItem, woodcut
             </div>
 
             <div className="active-panel-content">
+
                 {activeTab === 'inventory' && (
                     <InventoryPanel
-                        inventory={inventory}
+                        stats={stats}
                         onDropItem={onDropItem}
                     />
                 )}
-                {activeTab === 'skills' && 
-                    <SkillsPanel 
-                        woodcuttingExp={woodcuttingExp}
-                        currentLevel={currentLevel}
-                    />}
-                {activeTab === 'logout' && <LogoutMenu />}
+
+                {activeTab === 'skills' && (
+                    expTable && expTable.length > 0 ? (
+                        <SkillsPanel 
+                            stats={stats}
+                            woodcuttingExp={woodcuttingExp}
+                            expTable={expTable}
+                        />
+                    ) : (
+                    <div>Loading skills...</div>
+                    )
+                )}
+
+                {activeTab === 'logout' && (
+                    <LogoutMenu onLogout={onLogout} />
+                )}
+                
+
             </div>
 
             <div className="tabs-row bottom-tabs">

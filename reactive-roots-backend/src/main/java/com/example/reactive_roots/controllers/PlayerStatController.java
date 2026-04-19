@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/stats")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PlayerStatController {
 
     private final PlayerStatRepository repository;
@@ -39,12 +40,6 @@ public class PlayerStatController {
         UserProfileDTO stats = playerService.getPlayerProfile(username);
 
         return ResponseEntity.ok(stats);
-    }
-
-    // fetch stats for all players
-    @GetMapping()
-    public ResponseEntity<List<PlayerStat>> getAllPlayerStats() {
-        return ResponseEntity.ok(repository.findAll());
     }
 
     // fetch a specific player's stats (settings screen)

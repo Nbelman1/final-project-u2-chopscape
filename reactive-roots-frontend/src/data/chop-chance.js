@@ -1,10 +1,6 @@
-
-// TODO: move to database when we learn how to send pull requests 
-
 // success rate per axe swing based on level
-// can adjust to stronger axes or higher-level trees 
+// can adjust to stronger axes or higher-level trees later on
 
-// level 1 = 0.2539
 export const CHOP_CHANCES = [
     { level: 1, treeType: "tree", axeType: "bronze", successRate: 0.2539 },
     { level: 2, treeType: "tree", axeType: "bronze", successRate: 0.2578 },

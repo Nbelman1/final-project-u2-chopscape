@@ -1,10 +1,14 @@
 .message-log {
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* translucent black */
-  color: #ffffff;
+  background-color: #d2c19c;
+  color: #000000;
   padding: 10px;
   overflow-y: auto; /* auto scroll */
-  border: 2px solid #383023;
+  border: 4px solid #605a4a;
   box-sizing: border-box;
+
+  font-family: 'OSRS-Plain-12', sans-serif;
+  font-size: 12px;
+  line-height: 0.8;
 }

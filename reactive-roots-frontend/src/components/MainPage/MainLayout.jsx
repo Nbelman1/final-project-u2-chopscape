@@ -3,14 +3,18 @@ import Header from "./Header";
 import Footer from './Footer';
 
 // render pages with both Header and Footer
-const MainLayout = () => {
+const MainLayout = ({ isLoggedIn }) => {
     return (
-        <>
-          <Header />
+        <div className='main-page-container'>
+          <Header isLoggedIn={isLoggedIn}/>
+
           {/* changes which component is rendered based on Route */}
-          <Outlet /> 
+          <main className='main-content'>
+            <Outlet />
+          </main> 
+          
           <Footer />
-        </>
+        </div>
     );
 };
 
