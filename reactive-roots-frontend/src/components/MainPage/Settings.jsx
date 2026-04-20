@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from './apiConfig';
+import { API_BASE_URL } from "../../apiConfig";
 
 const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
     const [profile, setProfile] = useState(null);

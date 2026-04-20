@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { API_BASE_URL } from './apiConfig';
+import { API_BASE_URL } from '../../apiConfig';
 
 const CreateAccount = () => {
 
