@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from './apiConfig';
 
 const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
     const [profile, setProfile] = useState(null);
@@ -7,7 +8,7 @@ const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
     useEffect(() => {
         if (username) {
             setLoading(true);
-            fetch(`http://${API_BASE_URL}/api/users/profile/${username}`)
+            fetch(`${API_BASE_URL}/api/users/profile/${username}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("User not found on server");

@@ -120,7 +120,7 @@ function App() {
   }, [expTable]);
 
   async function handleDeleteAccount() {
-    await fetch(`http://${API_BASE_URL}/api/users/${stats.userId}`, {
+    await fetch(`${API_BASE_URL}/api/users/${stats.userId}`, {
       method: 'DELETE',
     });
 
@@ -170,7 +170,7 @@ function App() {
     // save sessionData to browser for persistence 
     localStorage.setItem('userSession', JSON.stringify(sessionData));
 
-    const response = await fetch('http://${API_BASE_URL}/api/levels');
+    const response = await fetch(`${API_BASE_URL}/api/levels`);
     const levelTable = await response.json();
     setExpTable(levelTable);
 
