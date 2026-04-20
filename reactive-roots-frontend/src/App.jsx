@@ -16,6 +16,7 @@ import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
 import RotateOverlay from './components/MainPage/RotateOverlay';
+import { API_BASE_URL } from './apiConfig';
 
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
@@ -47,7 +48,7 @@ function useAutoSave(userId, statsData, isLoggedIn, pathname) {
 
 async function syncUserStats(userId, statsData) {
   try {
-    const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
+    const response = await fetch(`${API_BASE_URL}/api/stats/${userId}/sync`, {
       method: 'PUT', 
       headers: {
         'content-type': 'application/json', 
@@ -119,7 +120,7 @@ function App() {
   }, [expTable]);
 
   async function handleDeleteAccount() {
-    await fetch(`http://localhost:8080/api/users/${stats.userId}`, {
+    await fetch(`http://${API_BASE_URL}/api/users/${stats.userId}`, {
       method: 'DELETE',
     });
 
@@ -169,7 +170,7 @@ function App() {
     // save sessionData to browser for persistence 
     localStorage.setItem('userSession', JSON.stringify(sessionData));
 
-    const response = await fetch('http://localhost:8080/api/levels');
+    const response = await fetch('http://${API_BASE_URL}/api/levels');
     const levelTable = await response.json();
     setExpTable(levelTable);
 

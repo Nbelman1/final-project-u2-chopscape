@@ -11,7 +11,7 @@ const CreateAccount = () => {
 
     async function checkUsernameAvailability(username) {
         try {
-            const response = await fetch(`http://localhost:8080/api/users/exists/${username}`);
+            const response = await fetch(`http://${API_BASE_URL}/api/users/exists/${username}`);
 
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status}`);
@@ -73,7 +73,7 @@ const CreateAccount = () => {
 
         if (isValid) {
             // hash password and POST to backend
-            const response = await fetch("http://localhost:8080/api/auth/register", {
+            const response = await fetch("http://${API_BASE_URL}/api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

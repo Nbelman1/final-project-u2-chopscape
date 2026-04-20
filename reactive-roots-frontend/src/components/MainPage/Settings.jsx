@@ -7,7 +7,7 @@ const Settings = ({ onLogout, setIsDeleteModalOpen, username }) => {
     useEffect(() => {
         if (username) {
             setLoading(true);
-            fetch(`http://localhost:8080/api/users/profile/${username}`)
+            fetch(`http://${API_BASE_URL}/api/users/profile/${username}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("User not found on server");
