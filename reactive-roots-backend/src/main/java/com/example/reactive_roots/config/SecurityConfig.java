@@ -35,34 +35,37 @@ public class SecurityConfig {
     // defines which URLs are locked and which are open
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                // 1. Explicitly enable CORS and disable CSRF for REST API use
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // 2. Allow all browser OPTIONS "handshake" requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/users/profile/**",
                                 "/api/users/**",
                                 "/api/stats/**",
-                                "/api/levels",
-                                "/api/inventory/**",
+                                "/api/levels/**",
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated()
-                )
-                .build();
+                );
+
+        return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Add your specific Vercel URL and localhost
-        configuration.setAllowedOrigins(Arrays.asList("https://vercel.app", "http://localhost:5173"));
+
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://reactive-roots.vercel.app",
+                "http://localhost:5173"
+        ));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
