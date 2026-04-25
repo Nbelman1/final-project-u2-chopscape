@@ -54,6 +54,7 @@ async function syncUserStats(userId, statsData) {
         'content-type': 'application/json', 
       },
       body: JSON.stringify(statsData),
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -170,7 +171,15 @@ function App() {
     // save sessionData to browser for persistence 
     localStorage.setItem('userSession', JSON.stringify(sessionData));
 
-    const response = await fetch(`${API_BASE_URL}/api/levels`);
+    const response = await fetch(`${API_BASE_URL}/api/levels`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch levels");
+
     const levelTable = await response.json();
     setExpTable(levelTable);
 
