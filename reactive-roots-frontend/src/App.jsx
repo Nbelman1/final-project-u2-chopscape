@@ -140,10 +140,15 @@ function App() {
     const currentData = { ...stats };
 
     // save progress
-    if (currentId) {
-      await syncUserStats(currentId, currentData);
+    try {
+      if (currentId) {
+        await syncUserStats(currentId, currentData);
+      }
+    } catch (err) {
+      console.warn("Failed to auto-save on logout:", err);
     }
-
+    
+    }
     // clear local storage, states (for UI), and refs (for engine)
     localStorage.removeItem('userSession');
     setIsLoggedIn(false);
