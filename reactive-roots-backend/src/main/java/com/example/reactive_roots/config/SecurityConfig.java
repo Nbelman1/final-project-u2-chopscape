@@ -39,11 +39,11 @@ public class SecurityConfig {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/error").permitAll() // CRITICAL FIX
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
