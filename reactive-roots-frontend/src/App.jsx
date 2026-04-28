@@ -138,14 +138,19 @@ function App() {
     const currentId = stats.userId;
     const currentData = { ...stats };
 
+    setIsLoggedIn(false);
+
     // save progress
     if (currentId) {
-      syncUserStats(currentId, currentData).catch(err => console.error("Final sync failed", err));
+      try {
+        await syncUserStats(currentId, currentData);
+      } catch (err) {
+        console.warn("Final sync failed, but proceeding with logout.");
+      }
     }
      
     // clear local storage, states (for UI), and refs (for engine)
     localStorage.removeItem('userSession');
-    setIsLoggedIn(false);
 
     const emptyInv = Array(28).fill(null);
 
@@ -164,7 +169,6 @@ function App() {
     // return to home page 
     navigate('/');  
   }
-
 
   async function handleLoginSuccess(sessionData) {
     // save sessionData to browser for persistence 
