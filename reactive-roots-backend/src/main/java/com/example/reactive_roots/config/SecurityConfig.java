@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/stats/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/users/exists/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/exists/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
