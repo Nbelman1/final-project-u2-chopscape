@@ -135,20 +135,14 @@ function App() {
   }
 
   async function handleLogout() {
-
     const currentId = stats.userId;
     const currentData = { ...stats };
 
     // save progress
-    try {
-      if (currentId) {
-        await syncUserStats(currentId, currentData);
-      }
-    } catch (err) {
-      console.warn("Failed to auto-save on logout:", err);
+    if (currentId) {
+      syncUserStats(currentId, currentData).catch(err => console.error("Final sync failed", err));
     }
-    
-    }
+     
     // clear local storage, states (for UI), and refs (for engine)
     localStorage.removeItem('userSession');
     setIsLoggedIn(false);
