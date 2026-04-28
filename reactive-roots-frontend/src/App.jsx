@@ -123,6 +123,7 @@ function App() {
   async function handleDeleteAccount() {
     await fetch(`${API_BASE_URL}/api/users/${stats.userId}`, {
       method: 'DELETE',
+      credentials: 'include'
     });
 
     localStorage.removeItem('userSession');
