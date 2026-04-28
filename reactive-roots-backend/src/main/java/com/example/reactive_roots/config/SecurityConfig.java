@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/stats/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/exists/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/profile/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
