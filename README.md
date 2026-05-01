@@ -1,4 +1,26 @@
 # Reactive Roots
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+
+
+
+---
+## See It Live
+🚀 [Live Site](https://reactive-roots.vercel.app/)  
+*Note: Backend may take 30s to wake up on first load.*
+
+**Test Account:**  
+**Username:** `demo`  
+**Password:** `Welcome!`
+
+## Video Demo
+[![Watch the Demo](https://i.postimg.cc/FHSbX3Fr/Screenshot-2026-05-01-121352.png)](https://www.loom.com/share/6e5c810f4f664247a4c200d77fd2c057)
+*Click the image above to watch a 90-second technical walkthrough.*
 
 ---
 
@@ -16,19 +38,29 @@ Reactive Roots faithfully replicates the level requirements, timers, and success
 
 ## Features
 
+![Reactive Roots game interface](https://i.postimg.cc/G3gFt6dL/Screenshot-2026-04-29-223839.png)
+
 - **Game Engine** - Core game engine utilizing React's `useRef` hook to update state and implementing guard clauses to guide player interaction
 - **Web Pages** - Web pages with React's `Outlet` component to conditionally render header and footer components based on active route
 - **Account Persistence** - MVC structure in Spring Boot built with Java, queries a MySQL database that persists player account progress across sessions via REST API endpoints
 
 ---
 
-## Technologies
+## Core Concepts
 
-React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
+RESTful API Design, Game Loop Logic, State Management, CRUD Operations, Containerization
 
 ---
 
-## Installation
+## Deployment
+- **Frontend:** React/Vite hosted on **Vercel**
+- **Backend:** Containerized with **Docker** and deployed on **Render** (Spring Boot)
+- **Database:** MySQL hosted on **Filess.io**
+- **Networking:** Implemented CORS and stateful sessions to bridge secure cross-domain requests between hosting environments.
+
+---
+
+## 🛠️ Installation
 
 ### Dependencies
 - Java JDK 21.0.9 or newer
@@ -45,13 +77,14 @@ React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
 ### Backend Setup
 > ⚠️ Complete this section before moving on to frontend setup
 
-- Ensure that `reactive-roots-backend/src/main/resources/application.properties` url in line 3 links to the correct MySQL port (`3306` by default)
-- Ensure that `@CrossOrigin` in controllers in `reactive-roots-backend/src/main/java/com.example.reactive-roots/controllers` maps to your React port (`5173` if using Vite)
-- Locate your IDE's environment variables settings, usually in **Run → Edit Configurations**
-- Include this line in your environment variables field, substituting your credentials: `DB_USERNAME=your-username;DB_PASSWORD=your-password;debug=true`
-- Point the working directory towards `final-project-u2-reactive-roots/reactive-roots-backend`
-- Run `ReactiveRootsApplication.java` — check console to verify app is running
-- Once the app is running, Spring Boot will auto-generate schema tables
+1.  **Database Preparation:** Create a local MySQL schema named `reactive-roots`.
+2.  **Environment Variables:** In your IDE's Run Configuration, set the following variables:
+    *   `DB_USERNAME`: Your local MySQL username.
+    *   `DB_PASSWORD`: Your local MySQL password.
+    *   `DB_URL` (Optional): Only needed if your MySQL is not on `localhost:3306`.
+3.  **Run:** Execute `ReactiveRootsApplication.java`.
+    *   The backend will automatically connect and generate the necessary tables via Hibernate.
+    *   Verify the console shows the application is running on port `8080`.
 
 ### Frontend Setup
 - Install dependencies with `npm install`
@@ -76,7 +109,7 @@ React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
 | Authorization | POST | `/api/auth/login` | Compares user inputs with database records |
 | Level Requirements | GET | `/api/levels` | Fetches level requirement table |
 | Player Stats | PUT | `/api/stats/{userId}/sync` | Saves experience, level, and inventory to user account |
-| User | GET | `/api/users/profile/{userId}` | Fetches experience, level, username, and date created |
+| User | GET | `/api/users/profile/{username}` | Fetches experience, level, username, and date created |
 | User | DELETE | `/api/users/{userId}` | Deletes user account |
 
 ---

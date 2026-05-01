@@ -16,6 +16,7 @@ import ConfirmationModal from './components/MainPage/ConfirmationModal';
 import { determineLevel } from './components/GameInterface/utils/woodcuttingUtils';
 import { LOGS } from './data/logs';
 import RotateOverlay from './components/MainPage/RotateOverlay';
+import { API_BASE_URL } from './apiConfig';
 
 function useAutoSave(userId, statsData, isLoggedIn, pathname) {
   const dataRef = useRef(statsData);
@@ -47,12 +48,13 @@ function useAutoSave(userId, statsData, isLoggedIn, pathname) {
 
 async function syncUserStats(userId, statsData) {
   try {
-    const response = await fetch(`http://localhost:8080/api/stats/${userId}/sync`, {
+    const response = await fetch(`${API_BASE_URL}/api/stats/${userId}/sync`, {
       method: 'PUT', 
       headers: {
         'content-type': 'application/json', 
       },
       body: JSON.stringify(statsData),
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -119,8 +121,9 @@ function App() {
   }, [expTable]);
 
   async function handleDeleteAccount() {
-    await fetch(`http://localhost:8080/api/users/${stats.userId}`, {
+    await fetch(`${API_BASE_URL}/api/users/${stats.userId}`, {
       method: 'DELETE',
+      credentials: 'include'
     });
 
     localStorage.removeItem('userSession');
@@ -133,18 +136,22 @@ function App() {
   }
 
   async function handleLogout() {
-
     const currentId = stats.userId;
     const currentData = { ...stats };
 
+    setIsLoggedIn(false);
+
     // save progress
     if (currentId) {
-      await syncUserStats(currentId, currentData);
+      try {
+        await syncUserStats(currentId, currentData);
+      } catch (err) {
+        console.warn("Final sync failed, but proceeding with logout.");
+      }
     }
-
+     
     // clear local storage, states (for UI), and refs (for engine)
     localStorage.removeItem('userSession');
-    setIsLoggedIn(false);
 
     const emptyInv = Array(28).fill(null);
 
@@ -164,12 +171,19 @@ function App() {
     navigate('/');  
   }
 
-
   async function handleLoginSuccess(sessionData) {
     // save sessionData to browser for persistence 
     localStorage.setItem('userSession', JSON.stringify(sessionData));
 
-    const response = await fetch('http://localhost:8080/api/levels');
+    const response = await fetch(`${API_BASE_URL}/api/levels`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch levels");
+
     const levelTable = await response.json();
     setExpTable(levelTable);
 

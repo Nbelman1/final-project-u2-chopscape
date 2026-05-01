@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/levels")
-@CrossOrigin(origins = "http://localhost:5173") // allow React to access
+@CrossOrigin(origins = "*") // allow access to all origins
 public class LevelRequirementController {
 
     LevelRequirementRepository repository;

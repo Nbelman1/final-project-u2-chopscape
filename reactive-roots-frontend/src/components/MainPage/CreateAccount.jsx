@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { API_BASE_URL } from '../../apiConfig';
 
 const CreateAccount = () => {
 
@@ -11,7 +12,7 @@ const CreateAccount = () => {
 
     async function checkUsernameAvailability(username) {
         try {
-            const response = await fetch(`http://localhost:8080/api/users/exists/${username}`);
+            const response = await fetch(`${API_BASE_URL}/api/users/exists/${username}`);
 
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status}`);
@@ -73,7 +74,7 @@ const CreateAccount = () => {
 
         if (isValid) {
             // hash password and POST to backend
-            const response = await fetch("http://localhost:8080/api/auth/register", {
+            const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

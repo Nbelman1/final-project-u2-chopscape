@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/stats")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*") // allow access to all origins
 public class PlayerStatController {
 
     private final PlayerStatRepository repository;

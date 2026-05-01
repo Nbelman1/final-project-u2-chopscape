@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 // allow access to React
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*") // allow access to all origins
 public class AuthController {
 
     private AuthenticationManager authenticationManager;

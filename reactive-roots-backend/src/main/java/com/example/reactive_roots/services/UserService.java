@@ -9,8 +9,10 @@ import com.example.reactive_roots.repositories.LevelRequirementRepository;
 import com.example.reactive_roots.repositories.PlayerStatRepository;
 import com.example.reactive_roots.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -78,15 +80,22 @@ public class UserService {
     }
 
     // register new user
+    @Transactional
     public void register(LoginRequestDTO dto) {
+        if (userRepository.existsByUsername(dto.username())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists.");
+        }
+
         // create new user
         User newUser = new User();
         newUser.setUsername(dto.username());
         String hashedSafePassword = passwordEncoder.encode(dto.password());
         newUser.setPassword(hashedSafePassword);
         newUser.setDateCreated(LocalDate.now());
+
         // save new user
         User savedUser = userRepository.save(newUser);
+
         // create initial stats
         PlayerStat initialStats = new PlayerStat();
         initialStats.setUser(savedUser);
