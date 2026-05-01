@@ -1,23 +1,30 @@
 # Reactive Roots
-![Java](https://shields.io)
-![Spring](https://shields.io)
-![MySQL](https://shields.io)
-![React](https://shields.io)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+
+
 
 ---
-
-🚀 [Live Demo](https://reactive-roots.vercel.app/)  
+## See It Live
+🚀 [Live Site](https://reactive-roots.vercel.app/)  
 *Note: Backend may take 30s to wake up on first load.*
 
 **Test Account:**  
 **Username:** `demo`  
 **Password:** `Welcome!`
 
+## Video Demo
+[![Watch the Demo](https://i.postimg.cc/FHSbX3Fr/Screenshot-2026-05-01-121352.png)](https://www.loom.com/share/6e5c810f4f664247a4c200d77fd2c057)
+*Click the image above to watch a 90-second technical walkthrough.*
+
 ---
 
 ## About
-
-![Reactive Roots game interface](https://postimg.cc/3Wp4bSkV)
 
 Reactive Roots is a browser-based re-creation of the woodcutting skill from my all-time favorite game Old School RuneScape. I built it as a way to explore my interest in game engine design while showcasing full-stack development skills acquired through LaunchCode.
 
@@ -31,15 +38,17 @@ Reactive Roots faithfully replicates the level requirements, timers, and success
 
 ## Features
 
+![Reactive Roots game interface](https://i.postimg.cc/G3gFt6dL/Screenshot-2026-04-29-223839.png)
+
 - **Game Engine** - Core game engine utilizing React's `useRef` hook to update state and implementing guard clauses to guide player interaction
 - **Web Pages** - Web pages with React's `Outlet` component to conditionally render header and footer components based on active route
 - **Account Persistence** - MVC structure in Spring Boot built with Java, queries a MySQL database that persists player account progress across sessions via REST API endpoints
 
 ---
 
-## Technologies
+## Core Concepts
 
-React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
+RESTful API Design, Game Loop Logic, State Management, CRUD Operations, Containerization
 
 ---
 
@@ -100,7 +109,7 @@ React, JavaScript, HTML, CSS, Java, Spring Boot, MySQL, Git
 | Authorization | POST | `/api/auth/login` | Compares user inputs with database records |
 | Level Requirements | GET | `/api/levels` | Fetches level requirement table |
 | Player Stats | PUT | `/api/stats/{userId}/sync` | Saves experience, level, and inventory to user account |
-| User | GET | `/api/users/profile/{userId}` | Fetches experience, level, username, and date created |
+| User | GET | `/api/users/profile/{username}` | Fetches experience, level, username, and date created |
 | User | DELETE | `/api/users/{userId}` | Deletes user account |
 
 ---
